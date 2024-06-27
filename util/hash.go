@@ -6,8 +6,8 @@ import (
 )
 
 func Md5(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	hashBytes := hasher.Sum(nil)
+	hash := md5.New()
+	hash.Write([]byte(text))
+	hashBytes := hash.Sum(nil)
 	return hex.EncodeToString(hashBytes)
 }
