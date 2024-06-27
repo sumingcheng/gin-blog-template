@@ -18,4 +18,12 @@ func TestGetUserByName(t *testing.T) {
 	t.Logf("user: %v", user)
 }
 
+func TestCreateUser(t *testing.T) {
+	database.CreateUser("素明诚", "123456")
+}
+
+func TestDeleteUser(t *testing.T) {
+	database.DeleteUser("素明诚")
+}
+
 // go test -v ".\database\test" -run ^TestGetUserByName$ -count=1

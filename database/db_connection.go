@@ -43,6 +43,7 @@ func createMysqlDB(
 	if err != nil {
 		util.LogRus.Panicf("connect to mysql use dsn %s failed: %s", dsn, err) // panic() os.Exit(2)
 	}
+
 	// 设置数据库连接池参数，提高并发性能
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxOpenConns(100) // 设置数据库连接池最大连接数

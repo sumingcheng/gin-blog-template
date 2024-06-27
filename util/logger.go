@@ -40,8 +40,8 @@ func InitLog(configFile string) {
 	// 设置日志文件路径和轮转策略
 	logFile := ProjectRootPath + viper.GetString("file") // 日志文件路径
 	fout, err := rotatelogs.New(
-		logFile+".%Y%m%d%H",                      // 日志文件名称格式
-		rotatelogs.WithLinkName(logFile),         // 设置最新日志的链接
+		logFile+".%Y%m%d%H", // 日志文件名称格式
+		//rotatelogs.WithLinkName(logFile),         // 设置最新日志的链接
 		rotatelogs.WithRotationTime(1*time.Hour), // 日志轮转时间为1小时
 		rotatelogs.WithMaxAge(7*24*time.Hour),    // 日志文件最大保存时间为7天
 	)
