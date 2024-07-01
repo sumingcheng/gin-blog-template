@@ -2,8 +2,9 @@ package database
 
 import (
 	"blog/util"
+	"context"
 	"fmt"
-	"github.com/go-redis/redis"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	ormlog "gorm.io/gorm/logger"
@@ -18,8 +19,8 @@ var (
 	blogMysqlOnce sync.Once
 	dbLog         ormlog.Interface
 
-	blog_redis      *redis.Client
-	blog_redis_once sync.Once
+	blogRedis     *redis.Client
+	blogRedisOnce sync.Once
 )
 
 func init() {
@@ -66,4 +67,35 @@ func GetBlogDBConnection() *gorm.DB {
 		}
 	})
 	return blogMysql
+}
+
+func createRedisClient(
+	address, passwd string,
+	db int,
+) *redis.Client {
+	cli := redis.NewClient(&redis.Options{
+		Username: "default",
+		Addr:     address,
+		Password: passwd,
+		DB:       db,
+	})
+	if err := cli.Ping(context.Background()).Err(); err != nil {
+		util.LogRus.Panicf("connect to redis %d failed %v", db, err)
+	} else {
+		util.LogRus.Infof("connect to redis %d", db) //能ping成功才说明连接成功
+	}
+	return cli
+}
+
+func GetRedisClient() *redis.Client {
+	blogRedisOnce.Do(func() {
+		if blogRedis == nil {
+			viper := util.CreateConfig("redis")
+			addr := viper.GetString("addr")
+			pass := viper.GetString("pass") //没对该配置项时，viper会赋默认值(即零值)，不会报错
+			db := viper.GetInt("db")
+			blogRedis = createRedisClient(addr, pass, db)
+		}
+	})
+	return blogRedis
 }

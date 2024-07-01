@@ -16,7 +16,6 @@ type Blog struct {
 	UpdateTime time.Time `gorm:"column:update_time"`
 }
 
-// TableName 指定表名为 blog
 func (Blog) TableName() string {
 	return "blog"
 }
@@ -53,17 +52,14 @@ func GetBlogByUserId(uid int) []*Blog {
 	return blogs
 }
 
-// UpdateBlog 更新博客内容
+// UpdateBlog 根据指定id更新文章正文
 func UpdateBlog(blog *Blog) error {
 	if blog.Id <= 0 {
-		// 检查博客 ID 是否有效
 		return fmt.Errorf("could not update blog of id %d", blog.Id)
 	}
 	if len(blog.Article) == 0 || len(blog.Title) == 0 {
-		// 检查标题和文章是否为空
 		return fmt.Errorf("could not set blog title or article to empty")
 	}
-	db := GetBlogDBConnection() // 获取数据库连接
-	// 更新博客
-	return db.Model(blog).Where("id = ?", blog.Id).Updates(map[string]any{"title": blog.Title, "article": blog.Article}).Error
+	db := GetBlogDBConnection()
+	return db.Model(Blog{}).Where("id=?", blog.Id).Updates(map[string]any{"title": blog.Title, "article": blog.Article}).Error
 }

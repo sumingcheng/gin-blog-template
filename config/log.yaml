@@ -1,2 +1,2 @@
-level: debug
-file: log/blog.log
+level: debug # debug, info, warn, error, fatal
+file: log/blog.log # log file path
