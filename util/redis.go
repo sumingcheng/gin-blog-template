@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	KEY_PREFIX = "auth_cookie_"
+	KeyPrefix = "auth_cookie_"
 )
 
 var (
@@ -45,7 +45,7 @@ func GetRedisClient() *redis.Client {
 // SetCookieAuth 用cookie_value, uid写入Redis
 func SetCookieAuth(cookieValue, uid string) {
 	client := GetRedisClient()
-	if err := client.Set(KEY_PREFIX+cookieValue, uid, time.Hour*24*30).Err(); err != nil { //30天之后过期
+	if err := client.Set(KeyPrefix+cookieValue, uid, time.Hour*24*30).Err(); err != nil { //30天之后过期
 		fmt.Printf("write pair(%s, %s) to redis failed: %s\n", cookieValue, uid, err)
 	} else {
 		// fmt.Printf("write pair(%s, %s) to redis\n", cookieValue, uid)
@@ -56,7 +56,7 @@ func SetCookieAuth(cookieValue, uid string) {
 func GetCookieAuth(cookieValue string) (uid string) {
 	client := GetRedisClient()
 	var err error
-	if uid, err = client.Get(KEY_PREFIX + cookieValue).Result(); err != nil {
+	if uid, err = client.Get(KeyPrefix + cookieValue).Result(); err != nil {
 		fmt.Printf("get auth info %s failed: %s\n", cookieValue, err)
 	} else {
 		// fmt.Printf("get uid %s by auth key %s\n", uid, cookieValue)
