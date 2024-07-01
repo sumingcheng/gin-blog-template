@@ -5,7 +5,6 @@ import (
 	"blog/handler/middleware"
 	"blog/util"
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
@@ -23,18 +22,18 @@ func main() {
 
 	router.Use(middleware.Metric())
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.GET("/metrics", func(ctx *gin.Context) {
-		promhttp.Handler().ServeHTTP(ctx.Writer, ctx.Request)
+	router.GET("/metrics", handler.Metric)
+
+	// 静态资源和SPA配置
+	router.Static("/static", "./dist")
+	router.NoRoute(func(c *gin.Context) {
+		c.File("./dist/index.html") // 托管SPA入口文件
 	})
-
-	router.Static("/js", "views/js")
-	router.StaticFile("/favicon.ico", "views/img/dqq.png")
-
-	router.LoadHTMLFiles("views/login.html", "views/blog_list.html", "views/blog.html")
 
 	router.GET("/login", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "login.html", nil)
 	})
+
 	router.POST("/login/submit", handler.Login)
 	router.POST("/token", handler.GetAuthToken)
 
@@ -44,6 +43,7 @@ func main() {
 	router.POST("/blog/update", middleware.Auth(), handler.BlogUpdate)
 
 	err := router.Run("localhost:5678")
+
 	if err != nil {
 		return
 	}
