@@ -2,7 +2,7 @@ package handler
 
 import (
 	"blog/database"
-	"blog/handler/middleware"
+	"blog/middleware"
 	"blog/util"
 	"github.com/gin-gonic/gin"
 	"net/http"

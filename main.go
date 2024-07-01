@@ -1,49 +1,33 @@
 package main
 
 import (
-	"blog/handler"
-	"blog/handler/middleware"
+	"blog/middleware"
+	"blog/router"
 	"blog/util"
+	"embed"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
 )
 
 func init() {
 	util.InitLog("log")
 }
 
+//go:embed views/dist/*
+var buildFS embed.FS
+
+//go:embed views/dist/index.html
+var indexPage []byte
+
 func main() {
 	//gin.SetMode(gin.ReleaseMode)   // 设置为发布模式
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出
 
-	router := gin.Default()
+	server := gin.Default()
+	server.Use(middleware.Metric())
 
-	router.Use(middleware.Metric())
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.GET("/metrics", handler.Metric)
+	router.SetRouter(server, buildFS, indexPage)
 
-	// 静态资源和SPA配置
-	router.Static("/static", "./dist")
-	router.NoRoute(func(c *gin.Context) {
-		c.File("./dist/index.html") // 托管SPA入口文件
-	})
-
-	router.GET("/login", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "login.html", nil)
-	})
-
-	router.POST("/login/submit", handler.Login)
-	router.POST("/token", handler.GetAuthToken)
-
-	router.GET("/blog/belong", handler.BlogBelong)
-	router.GET("/blog/list/:uid", handler.BlogList)
-	router.GET("/blog/:bid", handler.BlogDetail)
-	router.POST("/blog/update", middleware.Auth(), handler.BlogUpdate)
-
-	err := router.Run("localhost:5678")
-
+	err := server.Run("localhost:5678")
 	if err != nil {
 		return
 	}
