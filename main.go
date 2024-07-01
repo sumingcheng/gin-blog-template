@@ -11,14 +11,14 @@ import (
 	"net/http"
 )
 
-func Init() {
+func init() {
 	util.InitLog("log")
 }
 
 func main() {
-	Init()
 	//gin.SetMode(gin.ReleaseMode)   // 设置为发布模式
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出
+
 	router := gin.Default()
 
 	router.Use(middleware.Metric())
