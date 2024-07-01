@@ -36,7 +36,7 @@ func TestJWT(t *testing.T) {
 	}
 
 	if token, err := util.GenJWT(header, payload, secret); err != nil {
-		fmt.Printf("生成json views token失败: %v", err)
+		fmt.Printf("生成json web token失败: %v", err)
 	} else {
 		fmt.Println(token)
 		if _, p, err := util.VerifyJwt(token, secret); err != nil {

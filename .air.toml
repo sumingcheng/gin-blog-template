@@ -6,7 +6,7 @@ tmp_dir = "tmp"
 cmd = "go build -o ./bin/main.exe ."   # 构建命令，输出到 /bin 目录下
 bin = "./bin/main.exe"             # 执行文件的路径
 include_ext = ["go"]               # 只监听 Go 文件
-exclude_dir = ["views", "tmp", "vendor", "assets"] # 排除 views, tmp, vendor 和 assets 目录
+exclude_dir = ["views", "tmp", "vendor", "assets"] # 排除 web, tmp, vendor 和 assets 目录
 
 [log]
 time = true

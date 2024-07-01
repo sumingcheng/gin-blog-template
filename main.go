@@ -12,10 +12,10 @@ func init() {
 	util.InitLog("log")
 }
 
-//go:embed views/dist/*
+//go:embed web/dist/*
 var buildFS embed.FS
 
-//go:embed views/dist/index.html
+//go:embed web/dist/index.html
 var indexPage []byte
 
 func main() {
@@ -23,11 +23,13 @@ func main() {
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出
 
 	server := gin.Default()
+	trustedProxies := []string{"0.0.0.0/0"}
+	err := server.SetTrustedProxies(trustedProxies)
 	server.Use(middleware.Metric())
 
 	router.SetRouter(server, buildFS, indexPage)
 
-	err := server.Run("localhost:5678")
+	err = server.Run("localhost:5678")
 	if err != nil {
 		return
 	}
