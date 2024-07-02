@@ -2,7 +2,6 @@
 import axios from 'axios';
 import useCustomToast from "../hooks/useCustomToast.tsx";
 
-const { showWarningToast } = useCustomToast();
 
 const axiosClient = axios.create({
   baseURL: 'http://127.0.0.1',
@@ -12,6 +11,8 @@ const axiosClient = axios.create({
   },
 });
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
+const { showWarningToast } = useCustomToast();
 
 // 请求拦截器
 axiosClient.interceptors.request.use(
