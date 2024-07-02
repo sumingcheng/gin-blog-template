@@ -11,7 +11,7 @@ const Header: FC = () => {
         <TabList>
           <Tab onClick={ () => navigate('/login') }>LOGIN</Tab>
           <Tab onClick={ () => navigate('/blog') }>BLOG</Tab>
-          <Tab onClick={ () => navigate('/home') }>HOME</Tab>
+          <Tab onClick={ () => navigate('/') }>HOME</Tab>
         </TabList>
       </Tabs>
     </header>

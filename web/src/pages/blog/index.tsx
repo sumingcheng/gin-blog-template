@@ -28,7 +28,6 @@ const BlogPost: FC<BlogPostProps> = ({ userId, title, article, updateTime }) => 
 };
 
 const BlogPage: FC = () => {
-  // 假数据
   const blogPosts = [
     {
       userId: 'user123',

@@ -8,8 +8,8 @@ import HeaderLayout from '../components/headerLayout.tsx';
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={ <Home/> }/>
       <Route element={ <HeaderLayout/> }>
+        <Route path="/" element={ <Home/> }/>
         <Route path="/login" element={ <Login/> }/>
         <Route path="/blog" element={ <Blog/> }/>
       </Route>
