@@ -1,68 +1,45 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@charset "utf-8";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* 设定HTML基本背景和文字颜色 */
+html {
+  background-color: #fff; /* 白色背景 */
+  color: #000; /* 黑色文字 */
+  height: 100%; /* 高度全屏 */
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+/* 移除所有元素的默认外边距和内边距 */
+* {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* 设置通用字体和禁止缩放 */
+body {
+  font-family: Arial, "Microsoft Yahei", "Helvetica Neue", Helvetica, sans-serif;
+  -webkit-text-size-adjust: none; /* 防止移动浏览器文字缩放 */
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* 确保标题、输入框等使用统一的字体和大小 */
+h1, h2, h3, h4, h5, h6,
+input, textarea, button, select {
+  font-size: 100%; /* 使用基本的字体大小 */
+  font-family: Tahoma, Arial, "Hiragino Sans GB", "微软雅黑", SimSun, sans-serif;
+  font-weight: normal; /* 默认字重 */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* 列表无项目符号 */
+ul, ol, menu {
+  list-style: none; /* 去除列表样式 */
+}
+
+/* 表格样式 */
+table {
+  border-collapse: collapse; /* 边框合并 */
+  text-align: left; /* 左对齐 */
+}
+
+/* 表单元素焦点样式 */
+input, textarea, select, a {
+  outline: none; /* 去除焦点时的轮廓 */
+  border: none; /* 去除边框 */
 }
