@@ -15,5 +15,5 @@ func SetRouter(
 	// 接口
 	SetApiRouter(router)
 	// web
-	setWebRouter(router, buildFS, indexPage)
+	SetWebRouter(router, buildFS, indexPage)
 }

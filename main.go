@@ -23,8 +23,10 @@ func main() {
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出
 
 	server := gin.Default()
+
 	trustedProxies := []string{"0.0.0.0/0"}
 	err := server.SetTrustedProxies(trustedProxies)
+
 	server.Use(middleware.Metric())
 
 	router.SetRouter(server, buildFS, indexPage)
