@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Heading, Text, useColorModeValue, VStack } from '@chakra-ui/react';
+import { FC } from "react";
 
 interface BlogPostProps {
   userId: string;
@@ -8,7 +8,7 @@ interface BlogPostProps {
   updateTime: string;
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ userId, title, article, updateTime }) => {
+const BlogPost: FC<BlogPostProps> = ({ userId, title, article, updateTime }) => {
   return (
     <VStack
       spacing={ 2 }
@@ -27,7 +27,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ userId, title, article, updateTime 
   );
 };
 
-const BlogPage: React.FC = () => {
+const BlogPage: FC = () => {
   // 假数据
   const blogPosts = [
     {

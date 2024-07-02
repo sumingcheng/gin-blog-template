@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import { FC, FormEvent, useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Heading, Input, VStack } from '@chakra-ui/react';
 import useCustomToast from "../../hooks/useCustomToast.tsx";
 
-const LoginPage: React.FC = () => {
+const LoginPage: FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { showWarningToast } = useCustomToast();
 
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = (event: FormEvent) => {
     event.preventDefault();
     if (!username || !password) {
       showWarningToast('用户名和密码是必填项');
