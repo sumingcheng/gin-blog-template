@@ -5,7 +5,7 @@ import useCustomToast from "../../hooks/useCustomToast.tsx";
 const LoginPage: FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { showWarningToast } = useCustomToast();
+  const { showWarningToast, showSuccessToast } = useCustomToast();
 
   const handleLogin = (event: FormEvent) => {
     event.preventDefault();
@@ -13,7 +13,7 @@ const LoginPage: FC = () => {
       showWarningToast('用户名和密码是必填项');
       return;
     }
-
+    showSuccessToast('登录成功');
     console.log('Username:', username, 'Password:', password);
   };
 

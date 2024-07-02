@@ -1,5 +1,8 @@
 // src/api/axiosClient.js
 import axios from 'axios';
+import useCustomToast from "../hooks/useCustomToast.tsx";
+
+const { showWarningToast } = useCustomToast();
 
 const axiosClient = axios.create({
   baseURL: 'http://127.0.0.1',
@@ -9,6 +12,7 @@ const axiosClient = axios.create({
   },
 });
 
+
 // 请求拦截器
 axiosClient.interceptors.request.use(
   config => {
@@ -17,6 +21,7 @@ axiosClient.interceptors.request.use(
     return config;
   },
   error => {
+    showWarningToast(error.response.data.message);
     return Promise.reject(error);
   }
 );
@@ -26,6 +31,7 @@ axiosClient.interceptors.response.use(
   response => response,
   error => {
     // 处理响应错误
+    showWarningToast(error.response.data.message);
     return Promise.reject(error);
   }
 );
