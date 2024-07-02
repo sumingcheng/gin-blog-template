@@ -8,4 +8,9 @@ const colors = {
   },
 }
 
-export const theme = extendTheme({ colors })
+const shadows = {
+  xs: '0 0 0 1px rgba(0, 0, 0, 0.15)'
+};
+
+
+export const theme = extendTheme({ colors, shadows })

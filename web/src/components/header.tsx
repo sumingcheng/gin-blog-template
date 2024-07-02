@@ -5,32 +5,16 @@ import { useNavigate } from 'react-router-dom';
 const Header: FC = () => {
   const navigate = useNavigate();
 
-  // 处理点击事件，根据 tab 的索引来决定路由路径
-  const handleTabsChange = (index: number) => {
-    switch (index) {
-      case 0:
-        navigate('/blog');
-        break;
-      case 1:
-        navigate('/home');
-        break;
-      case 2:
-        navigate('/login');
-        break;
-      default:
-        break;
-    }
-  };
   return (
     <header>
-      <Tabs align='end' variant='enclosed' onChange={ handleTabsChange }>
+      <Tabs align='end' variant='enclosed'>
         <TabList>
-          <Tab>BLOG</Tab>
-          <Tab>HOME</Tab>
-          <Tab>LOGIN</Tab>
+          <Tab onClick={ () => navigate('/login') }>LOGIN</Tab>
+          <Tab onClick={ () => navigate('/blog') }>BLOG</Tab>
+          <Tab onClick={ () => navigate('/home') }>HOME</Tab>
         </TabList>
       </Tabs>
     </header>
   );
 }
-export default Header
+export default Header;

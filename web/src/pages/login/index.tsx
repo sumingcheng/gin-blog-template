@@ -31,7 +31,7 @@ const LoginPage: React.FC = () => {
         w="full"
         maxW="md"
         rounded="md"
-        boxShadow="outline"
+        boxShadow="xs"
         p={ 8 }
         as="form"
         onSubmit={ handleLogin }
@@ -46,6 +46,7 @@ const LoginPage: React.FC = () => {
             value={ username }
             onChange={ (e) => setUsername(e.target.value) }
             placeholder="请输入您的用户名"
+            autoComplete="username"
           />
         </FormControl>
         <FormControl id="password" isRequired mt={ 6 }>
@@ -55,6 +56,7 @@ const LoginPage: React.FC = () => {
             value={ password }
             onChange={ (e) => setPassword(e.target.value) }
             placeholder="请输入您的密码"
+            autoComplete="current-password"
           />
         </FormControl>
         <Button
