@@ -34,3 +34,10 @@ create table if not exists blog
     primary key (id),
     key idx_user_id (user_id)
 ) default charset = utf8mb4 comment '博客表';
+
+insert into blog (user_id, title, article)
+values (1, '博客标题1', '博客内容1'),
+       (1, '博客标题2', '博客内容2'),
+       (2, '博客标题3', '博客内容3'),
+       (2, '博客标题4', '博客内容4'),
+       (2, '博客标题5', '博客内容5');

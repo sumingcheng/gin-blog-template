@@ -9,11 +9,11 @@ import (
 )
 
 type Blog struct {
-	Id         int       `gorm:"column:id;primaryKey"`
-	UserId     int       `gorm:"column:user_id"`
-	Title      string    `gorm:"column:title"`
-	Article    string    `gorm:"column:article"`
-	UpdateTime time.Time `gorm:"column:update_time"`
+	Id         int       `gorm:"column:id;primaryKey" json:"id"`
+	UserId     int       `gorm:"column:user_id" json:"userId"`
+	Title      string    `gorm:"column:title" json:"title"`
+	Article    string    `gorm:"column:article" json:"article"`
+	UpdateTime time.Time `gorm:"column:update_time" json:"updateTime"`
 }
 
 func (Blog) TableName() string {
@@ -42,7 +42,7 @@ func GetBlogById(id int) *Blog {
 func GetBlogByUserId(uid int) []*Blog {
 	db := GetBlogDBConnection() // 获取数据库连接
 	var blogs []*Blog
-	if err := db.Select("id, title").Where("user_id = ?", uid).Find(&blogs).Error; err != nil {
+	if err := db.Select(allBlogField).Where("user_id = ?", uid).Find(&blogs).Error; err != nil {
 		// 如果查询失败，记录错误，并返回 nil
 		if !errors.Is(gorm.ErrRecordNotFound, err) {
 			util.LogRus.Errorf("get blogs of user %d failed: %s", uid, err)

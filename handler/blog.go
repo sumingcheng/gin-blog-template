@@ -9,6 +9,12 @@ import (
 	"strconv"
 )
 
+type BlogListResponse struct {
+	Code  int              `json:"code"`
+	Msg   string           `json:"msg"`
+	Blogs []*database.Blog `json:"blogs"`
+}
+
 // BlogList 获取用户的博客列表
 func BlogList(ctx *gin.Context) {
 	uid, err := strconv.Atoi(ctx.Param("uid")) //获取restful参数
@@ -18,7 +24,11 @@ func BlogList(ctx *gin.Context) {
 	}
 	blogs := database.GetBlogByUserId(uid)
 	util.LogRus.Debugf("get %d blogs of user %d", len(blogs), uid)
-	ctx.HTML(http.StatusOK, "blog_list.html", blogs) //go template
+	ctx.JSON(http.StatusOK, BlogListResponse{
+		Code:  0,
+		Msg:   "success",
+		Blogs: blogs,
+	})
 }
 
 // BlogDetail 获取文章详细的详情
