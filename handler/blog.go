@@ -47,7 +47,11 @@ func BlogDetail(ctx *gin.Context) {
 	}
 
 	util.LogRus.Debug(blog.Article)
-	ctx.HTML(http.StatusOK, "blog.html", gin.H{"title": blog.Title, "article": blog.Article, "bid": blogId, "update_time": blog.UpdateTime.Format("2006-01-02 15:04:05")})
+	ctx.JSON(http.StatusOK, BlogListResponse{
+		Code:  0,
+		Msg:   "success",
+		Blogs: []*database.Blog{blog},
+	})
 }
 
 type UpdateRequest struct {
