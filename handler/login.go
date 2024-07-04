@@ -18,18 +18,18 @@ type LoginResponse struct {
 }
 
 // Login godoc
-// @Summary User login
-// @Description Perform user login with username and password.
-// @Tags authentication
-// @Accept  x-www-form-urlencoded
-// @Produce  json
-// @Param   user formData string true "User name"
-// @Param   pass formData string true "Password"
-// @Success 200 {object} LoginResponse "Successful login, token returned"
-// @Failure 400 {object} LoginResponse "Invalid request, user name or password format error"
-// @Failure 403 {object} LoginResponse "Unauthorized, wrong user name or password"
-// @Failure 500 {object} LoginResponse "Internal server error, token generation failed"
-// @Router /login [get]
+// ShowAccount godoc
+// @Summary      Show an account
+// @Description  get string by ID
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Account ID"
+// @Success      200  {object}  model.Account
+// @Failure      400  {object}  httputil.HTTPError
+// @Failure      404  {object}  httputil.HTTPError
+// @Failure      500  {object}  httputil.HTTPError
+// @Router       /accounts/{id} [get]
 func Login(ctx *gin.Context) {
 	name := ctx.PostForm("user") //从post form中获取参数
 	pass := ctx.PostForm("pass")

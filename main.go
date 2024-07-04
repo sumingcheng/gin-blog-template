@@ -18,6 +18,19 @@ var buildFS embed.FS
 //go:embed web/dist/index.html
 var indexPage []byte
 
+// 添加注释以描述 server 信息
+// @title           Swagger Example API
+// @version         2.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+// @host      localhost:8080
+// @BasePath  /api/v1
+// @securityDefinitions.basic  BasicAuth
 func main() {
 	//gin.SetMode(gin.ReleaseMode)   // 设置为发布模式
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出

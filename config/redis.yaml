@@ -1,3 +1,3 @@
-addr: 127.0.0.1:6379
+addr: 172.22.220.64:6379
 db: 0
-pass: jhkdjhkjdhsIUTYURTU_pZetDn  # Password for Redis
+pass: sumingcheng  # Password for Redis
