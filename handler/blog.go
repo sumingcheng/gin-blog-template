@@ -113,8 +113,16 @@ func BlogBelong(ctx *gin.Context) {
 	}
 	loginUid := middleware.GetUidFromJwt(token)
 	if loginUid == blog.UserId {
-		ctx.String(http.StatusOK, "true")
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":   0,
+			"msg":    "success",
+			"belong": true,
+		})
 	} else {
-		ctx.String(http.StatusOK, "false")
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":   0,
+			"msg":    "success",
+			"belong": false,
+		})
 	}
 }
