@@ -55,50 +55,58 @@ func BlogDetail(ctx *gin.Context) {
 }
 
 type UpdateRequest struct {
-	BlogId  int    `form:"bid" binding:"gt=0"`     // 索引值大于0
-	Title   string `form:"title" binding:"gt=0"`   // 字符长度大于0
-	Article string `form:"article" binding:"gt=0"` // 字符长度大于0
+	BlogId  int    `form:"bid" binding:"gt=0"`               // 索引值大于0
+	Title   string `form:"title" binding:"required,min=1"`   // 字符长度大于0
+	Article string `form:"article" binding:"required,min=1"` // 字符长度大于0
 }
 
 // BlogUpdate 更新博客
 func BlogUpdate(ctx *gin.Context) {
-	//blogId := ctx.PostForm("bid") //获取post form参数
-	//title := ctx.PostForm("title")
-	//article := ctx.PostForm("article")
-	//bid, err := strconv.Atoi(blogId)
-	//if err != nil {
-	//	ctx.String(http.StatusBadRequest, "invalid blog id")
-	//	return
-	//}
-
 	var request UpdateRequest
-	if err := ctx.ShouldBind(&request); err != nil {
-		ctx.String(http.StatusBadRequest, "invalid request")
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": 1,
+			"msg":  err.Error(),
+		})
+		util.LogRus.Errorf("update blog failed: %s", err)
 		return
 	}
-	bid := request.BlogId
-	title := request.Title
-	article := request.Article
 
+	bid := request.BlogId
 	blog := database.GetBlogById(bid)
 	if blog == nil {
-		ctx.String(http.StatusBadRequest, "blog id not exists")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": 1,
+			"msg":  "blog id not exists",
+		})
+		util.LogRus.Errorf("blog id %d not exists", bid)
 		return
 	}
 
-	loginUid := ctx.Value("uid") //从ctx中取得当前登录用户的uid
-	if loginUid == nil || loginUid.(int) != blog.UserId {
-		ctx.String(http.StatusForbidden, "无权修改")
+	loginUid, ok := ctx.Value("uid").(int)
+	if !ok || loginUid != blog.UserId {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"code": 1,
+			"msg":  "无权修改",
+		})
+		util.LogRus.Errorf("user %d attempted to modify blog %d without permission", loginUid, bid)
 		return
 	}
 
-	err := database.UpdateBlog(&database.Blog{Id: bid, Title: title, Article: article})
+	err := database.UpdateBlog(&database.Blog{Id: bid, Title: request.Title, Article: request.Article})
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code": 1,
+			"msg":  "更新失败",
+		})
 		util.LogRus.Errorf("update blog %d failed: %s", bid, err)
-		ctx.String(http.StatusInternalServerError, "更新失败") //不要把原始的err返回给前端，不利用隐藏错误信息的安全性mysql未
 		return
 	}
-	ctx.String(http.StatusOK, "success")
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "success",
+	})
 }
 
 // BlogBelong 检查博客是否属于当前经过认证的用户
