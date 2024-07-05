@@ -7,7 +7,8 @@ RUN npm config set registry https://registry.npmmirror.com/ && \
     apk add --no-cache libc6-compat && \
     npm install -g pnpm && \
     pnpm install && \
-    pnpm run build
+    pnpm run build && \
+    ls -al /gin-blog/web/dist  # 添加这一行来检查目录内容
 
 FROM golang:1.22.2 AS goBuild
 
@@ -18,8 +19,7 @@ ENV GO111MODULE=on \
     GOOS=linux
 
 COPY . .
-COPY --from=feBuild /gin-blog/web/dist ./gin-blog/web/dist
-RUN ls -al /gin-blog/web/dist
+COPY --from=feBuild /gin-blog/web/dist /gin-blog/web/dist
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download && \
     go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
