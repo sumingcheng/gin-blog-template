@@ -15,7 +15,6 @@ FROM golang:1.22.2 AS goBuild
 WORKDIR /gin-blog
 
 ENV GO111MODULE=on \
-    CGO_ENABLED=1 \
     GOOS=linux
 
 COPY . .
@@ -39,4 +38,4 @@ RUN ls -l
 RUN chmod +x /gin-blog
 EXPOSE 5678
 
-ENTRYPOINT ["gin-blog"]
+ENTRYPOINT ["/gin-blog"]
