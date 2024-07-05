@@ -1,6 +1,6 @@
 FROM node:18.17-alpine AS webBuild
 
-WORKDIR /build
+WORKDIR /gin-blog/web
 
 COPY ./web .
 RUN npm config set registry https://registry.npmmirror.com/ && \
@@ -18,7 +18,7 @@ ENV GO111MODULE=on \
     GOOS=linux
 
 COPY . .
-COPY --from=webBuild /gin-blog/web/dist ./build/dist
+COPY --from=webBuild /gin-blog/web/dist ./gin-blog/web/dist
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download
 RUN go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
