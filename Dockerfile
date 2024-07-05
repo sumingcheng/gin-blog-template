@@ -3,6 +3,8 @@ FROM node:18.17-alpine AS feBuild
 WORKDIR /gin-blog/web
 
 COPY ./web .
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 RUN npm config set registry https://registry.npmmirror.com/ && \
     apk add --no-cache libc6-compat && \
     npm install -g pnpm && \
@@ -24,7 +26,7 @@ RUN go mod download && \
     go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
 
 FROM alpine
-# 替换为阿里云镜像源
+
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 WORKDIR /data
