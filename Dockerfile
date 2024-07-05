@@ -23,7 +23,7 @@ ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download && \
     go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
 
-FROM alpine:3.20
+FROM alpine
 # 替换为阿里云镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
