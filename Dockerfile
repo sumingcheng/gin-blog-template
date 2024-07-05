@@ -39,4 +39,4 @@ RUN ls -l
 RUN chmod +x /gin-blog
 EXPOSE 5678
 
-ENTRYPOINT ["/gin-blog"]
+ENTRYPOINT ["gin-blog"]
