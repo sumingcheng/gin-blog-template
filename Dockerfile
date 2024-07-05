@@ -1,4 +1,4 @@
-FROM node:18.17-alpine AS webBuild
+FROM node:18.17-alpine AS feBuild
 
 WORKDIR /gin-blog/web
 
@@ -18,12 +18,14 @@ ENV GO111MODULE=on \
     GOOS=linux
 
 COPY . .
-COPY --from=webBuild /gin-blog/web/dist ./gin-blog/web/dist
+COPY --from=feBuild /gin-blog/web/dist ./gin-blog/web/dist
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download
 RUN go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
 
 FROM alpine:3.16
+# 替换为阿里云镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 WORKDIR /data
 
