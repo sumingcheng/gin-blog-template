@@ -14,7 +14,7 @@ ENV GO111MODULE=on \
     GOOS=linux
 COPY . .
 COPY --from=build1 /web/dist /gin-blog/web/dist
-ENV GOPROXY=https://goproxy.io,direct
+ENV GOPROXY=https://mirrors.cloud.tencent.com/go/,direct
 RUN go mod download && \
     go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
 
