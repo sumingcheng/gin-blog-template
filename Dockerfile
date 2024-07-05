@@ -22,7 +22,7 @@ FROM alpine AS build3
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add --no-cache ca-certificates tzdata && \
     update-ca-certificates
-COPY --from=build2 /gin-blog/gin-blog /gin-blog
+COPY --from=build2 /gin-blog /gin-blog
 RUN chmod +x /gin-blog
 EXPOSE 5678
 ENTRYPOINT ["/gin-blog"]
