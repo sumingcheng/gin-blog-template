@@ -19,6 +19,7 @@ ENV GO111MODULE=on \
 
 COPY . .
 COPY --from=feBuild /gin-blog/web/dist ./gin-blog/web/dist
+RUN ls -al /gin-blog/web/dist
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download && \
     go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
