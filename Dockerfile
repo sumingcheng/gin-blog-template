@@ -35,6 +35,8 @@ RUN apk add --no-cache ca-certificates tzdata && \
 
 ENV PORT=5678
 COPY --from=goBuild /gin-blog/gin-blog /gin-blog
+RUN ls -l
+RUN chmod +x /gin-blog
 EXPOSE 5678
 
 ENTRYPOINT ["/gin-blog"]
