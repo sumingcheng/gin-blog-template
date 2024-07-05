@@ -24,7 +24,7 @@ ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download && \
     go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
 
-FROM alpine:3.16
+FROM alpine:3.20
 # 替换为阿里云镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
@@ -34,7 +34,7 @@ RUN apk add --no-cache ca-certificates tzdata && \
     update-ca-certificates
 
 ENV PORT=5678
-COPY --from=goBuild /gin-blog/gin-blog /
+COPY --from=goBuild /gin-blog/gin-blog /gin-blog
 EXPOSE 5678
 
 ENTRYPOINT ["/gin-blog"]
