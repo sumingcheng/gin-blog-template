@@ -1,42 +1,31 @@
-FROM node:18.17-alpine AS feBuild
-
+FROM node:18.17-alpine AS build1
 WORKDIR /gin-blog/web
 
-COPY ./web .
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
+COPY ./web .
 RUN npm config set registry https://registry.npmmirror.com/ && \
     apk add --no-cache libc6-compat && \
     npm install -g pnpm && \
     pnpm install && \
-    pnpm run build && \
-    ls -al /gin-blog/web/dist  # 添加这一行来检查目录内容
+    pnpm run build
 
-FROM golang:1.22.2 AS goBuild
-
+FROM golang:1.22.2 AS build2
 WORKDIR /gin-blog
 
 ENV GO111MODULE=on \
     GOOS=linux
-
 COPY . .
-COPY --from=feBuild /gin-blog/web/dist /gin-blog/web/dist
+COPY --from=build1 /gin-blog/web/dist /gin-blog/web/dist
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download && \
-    go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
+    go build -ldflags "-s -w -extldflags '-static'" -o /gin-blog
 
-FROM alpine
+FROM alpine AS build3
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
-WORKDIR /data
-
 RUN apk add --no-cache ca-certificates tzdata && \
     update-ca-certificates
-
-ENV PORT=5678
-COPY --from=goBuild /gin-blog/gin-blog /gin-blog
-RUN ls -l
+COPY --from=build2 /gin-blog /gin-blog
 RUN chmod +x /gin-blog
 EXPOSE 5678
 
