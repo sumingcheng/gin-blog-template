@@ -16,7 +16,7 @@ COPY . .
 COPY --from=build1 /web/dist /gin-blog/web/dist
 ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download && \
-    go build -ldflags "-s -w" -extldflags '-static' -o gin-blog
+    go build -ldflags "-s -w -extldflags '-static'" -o gin-blog
 
 FROM alpine AS build3
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
