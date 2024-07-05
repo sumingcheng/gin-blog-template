@@ -44,7 +44,7 @@ func main() {
 
 	router.SetRouter(server, buildFS, indexPage)
 
-	err = server.Run("localhost:5678")
+	err = server.Run("0.0.0.0:5678")
 	if err != nil {
 		return
 	}
