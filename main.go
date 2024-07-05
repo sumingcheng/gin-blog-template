@@ -32,7 +32,7 @@ var indexPage []byte
 // @BasePath  /api/v1
 // @securityDefinitions.basic  BasicAuth
 func main() {
-	gin.SetMode(gin.ReleaseMode) // 设置为发布模式
+	//gin.SetMode(gin.ReleaseMode) // 设置为发布模式
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出
 
 	server := gin.Default()

@@ -1,6 +1,7 @@
 package util
 
 import (
+	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"sync"
@@ -14,6 +15,7 @@ const (
 var (
 	blogRedis     *redis.Client
 	blogRedisOnce sync.Once
+	ctx           = context.Background()
 )
 
 func createRedisClient(
@@ -25,10 +27,10 @@ func createRedisClient(
 		Password: passwd,
 		DB:       db,
 	})
-	if err := cli.Ping().Err(); err != nil {
+	if err := cli.Ping(ctx).Err(); err != nil {
 		panic(fmt.Errorf("connect to redis %d failed %v", db, err))
 	} else {
-		fmt.Printf("connect to redis %d\n", db) //使用ping成功打印消息连接成功
+		fmt.Printf("connect to redis %d\n", db)
 	}
 	return cli
 }
@@ -42,24 +44,18 @@ func GetRedisClient() *redis.Client {
 	return blogRedis
 }
 
-// SetCookieAuth 用cookie_value, uid写入Redis
 func SetCookieAuth(cookieValue, uid string) {
 	client := GetRedisClient()
-	if err := client.Set(KeyPrefix+cookieValue, uid, time.Hour*24*30).Err(); err != nil { //30天之后过期
+	if err := client.Set(ctx, KeyPrefix+cookieValue, uid, time.Hour*24*30).Err(); err != nil { // 30天之后过期
 		fmt.Printf("write pair(%s, %s) to redis failed: %s\n", cookieValue, uid, err)
-	} else {
-		// fmt.Printf("write pair(%s, %s) to redis\n", cookieValue, uid)
 	}
 }
 
-// GetCookieAuth 使用cookie_value获取uid
 func GetCookieAuth(cookieValue string) (uid string) {
 	client := GetRedisClient()
 	var err error
-	if uid, err = client.Get(KeyPrefix + cookieValue).Result(); err != nil {
+	if uid, err = client.Get(ctx, KeyPrefix+cookieValue).Result(); err != nil {
 		fmt.Printf("get auth info %s failed: %s\n", cookieValue, err)
-	} else {
-		// fmt.Printf("get uid %s by auth key %s\n", uid, cookieValue)
 	}
 	return
 }
