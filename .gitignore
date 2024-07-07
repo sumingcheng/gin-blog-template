@@ -24,4 +24,3 @@ go.work.sum
 /log/*.log
 /log/*
 *.log
-/config/*
