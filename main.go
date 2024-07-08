@@ -41,6 +41,7 @@ func main() {
 	err := server.SetTrustedProxies(trustedProxies)
 
 	server.Use(middleware.Metric())
+	server.Use(middleware.CORSMiddleware())
 
 	router.SetRouter(server, buildFS, indexPage)
 

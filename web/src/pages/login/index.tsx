@@ -1,18 +1,27 @@
 import { FC, FormEvent, useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Heading, Input, VStack } from '@chakra-ui/react';
 import useCustomToast from "../../hooks/useCustomToast.tsx";
+import { login } from "../../api/user.ts";
+import { encryptPassword } from "../../utils/md5.ts";
 
 const LoginPage: FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { showWarningToast, showSuccessToast } = useCustomToast();
 
-  const handleLogin = (event: FormEvent) => {
+  const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     if (!username || !password) {
       showWarningToast('用户名和密码是必填项');
       return;
     }
+    const res = await login({ user: username, pass: encryptPassword(password) });
+    console.log(res)
+    if (res.code !== 0) {
+      showWarningToast(res.message);
+      return;
+    }
+
     showSuccessToast('登录成功');
     console.log('Username:', username, 'Password:', password);
   };

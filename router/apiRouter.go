@@ -10,7 +10,7 @@ import (
 func SetApiRouter(router *gin.Engine) {
 	apiRouter := router.Group("/api")
 	// 接口
-	apiRouter.GET("/login", handler.Login)
+	apiRouter.POST("/login", handler.Login)
 	apiRouter.POST("/token", handler.GetAuthToken)
 
 	apiRouter.GET("/blog/belong", handler.BlogBelong)

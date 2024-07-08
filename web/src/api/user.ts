@@ -1,11 +1,11 @@
 import axiosClient from "../utils/axiosClient.tsx";
 
 // 登录
-export const login = async (data: object[]) => {
+export const login = async (data: {user: string, pass: string}) => {
   const res = await axiosClient({
     url: '/api/login',
-    method: 'get',
-    data,
+    method: 'post',
+    data
   })
   return res.data
 };
