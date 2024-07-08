@@ -1,6 +1,6 @@
 module blog
 
-go 1.22.2
+go 1.22.1
 
 require (
 	github.com/gin-contrib/static v1.1.2
