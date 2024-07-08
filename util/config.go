@@ -15,10 +15,9 @@ var (
 func getProjectRootPath() string {
 	// 从环境变量获取配置路径，如果未设置，则使用默认路径
 	if rootPath := os.Getenv("CONFIG_PATH"); rootPath != "" {
-		return rootPath
+			return rootPath
 	}
-	_, filename, _, _ := runtime.Caller(0)
-	return path.Dir(filename) + "/../"
+	return "./"
 }
 
 // CreateConfig 用于创建并读取配置文件

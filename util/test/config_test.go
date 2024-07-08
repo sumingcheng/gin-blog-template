@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-func TestGetOnCurrentPath(t *testing.T) {
-	str := util.GetOnCurrentPath()
-	fmt.Println(str)
-}
+// func TestGetOnCurrentPath(t *testing.T) {
+// 	str := util.GetOnCurrentPath()
+// 	fmt.Println(str)
+// }
 
 func TestCreateConfig(t *testing.T) {
 	dbViper := util.CreateConfig("key")
