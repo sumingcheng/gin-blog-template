@@ -24,3 +24,5 @@ go.work.sum
 /log/*.log
 /log/*
 *.log
+.idea
+.vscode
