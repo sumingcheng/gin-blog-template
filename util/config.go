@@ -1,39 +1,41 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 var (
 	ProjectRootPath = getProjectRootPath()
 )
 
+// 根据环境变量区分不同环境
 func getProjectRootPath() string {
-	// 从环境变量获取配置路径，如果未设置，则使用默认路径
-	if rootPath := os.Getenv("CONFIG_PATH"); rootPath != "" {
-		return rootPath
+	// 生产环境: 配置文件与可执行文件在同一目录
+	if os.Getenv("APP_ENV") == "production" {
+		return "/config"
 	}
-	return "./"
+	// 开发环境: 返回代码文件所在的目录上一级的 'config' 目录
+	_, filename, _, _ := runtime.Caller(0)
+	return filepath.Join(filepath.Dir(filename), "../config")
 }
 
 // CreateConfig 用于创建并读取配置文件
 func CreateConfig(file string) *viper.Viper {
 	config := viper.New()
-	configPath := ProjectRootPath + "config/"
-	config.AddConfigPath(configPath) // 设置配置文件路径
-	config.SetConfigName(file)       // 设置文件名
-	config.SetConfigType("yaml")     // 设置文件类型
-
-	configFile := configPath + file + ".yaml"
+	config.AddConfigPath(ProjectRootPath) // 设置配置文件路径
+	config.SetConfigName(file)            // 设置文件名
+	config.SetConfigType("yaml")          // 设置文件类型
 
 	// 尝试读取配置文件
 	if err := config.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			panic(fmt.Errorf("找不到配置文件：%s", configFile))
-		} else {
-			panic(fmt.Errorf("解析配置文件出错：%s; 错误：%s", configFile, err))
+		var configFileNotFoundError viper.ConfigFileNotFoundError
+		if errors.As(err, &configFileNotFoundError) {
+			panic(fmt.Errorf("找不到配置文件：%s", filepath.Join(ProjectRootPath, file+".yaml")))
 		}
 	}
 	return config

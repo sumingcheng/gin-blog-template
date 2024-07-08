@@ -25,10 +25,11 @@ FROM alpine AS build3
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add --no-cache ca-certificates tzdata && \
     update-ca-certificates
-COPY --from=build2 /gin-blog/gin-blog /gin-blog
+COPY --from=build2 /gin-blog/gin-blog /app/gin-blog 
 COPY /config /config
-RUN chmod +x /gin-blog
-ENV CONFIG_PATH=/config
+RUN chmod +x /app/gin-blog
+ENV APP_ENV=production
 
 EXPOSE 5678
-ENTRYPOINT ["/gin-blog"]
+ENTRYPOINT ["/app/gin-blog"]
+
