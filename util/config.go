@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
-	"path"
-	"runtime"
 )
 
 var (
@@ -15,7 +13,7 @@ var (
 func getProjectRootPath() string {
 	// 从环境变量获取配置路径，如果未设置，则使用默认路径
 	if rootPath := os.Getenv("CONFIG_PATH"); rootPath != "" {
-			return rootPath
+		return rootPath
 	}
 	return "./"
 }
