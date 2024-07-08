@@ -30,5 +30,5 @@ func GetToken(refreshToken string) (authToken string) {
 			util.LogRus.Errorf("get auth token of refresh token %s failed: %s", refreshToken, err)
 		}
 	}
-	return
+	return authToken
 }

@@ -14,7 +14,7 @@ export const login = async (data: {user: string, pass: string}) => {
 export const getToken = async (data: object[]) => {
   const res = await axiosClient({
     url: '/api/token',
-    method: 'POST',
+    method: 'post',
     data,
   })
   return res.data

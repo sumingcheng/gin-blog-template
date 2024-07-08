@@ -75,13 +75,33 @@ func Login(ctx *gin.Context) {
 			false,                               //是否只能通过https访问
 			true,                                //是否允许别人通过js获取自己的cookie，设为false防止XSS攻击
 		)
-		ctx.JSON(http.StatusOK, LoginResponse{Code: 0, Msg: "Success", Uid: user.Id, Token: accessToken})
+		ctx.JSON(http.StatusOK, LoginResponse{Code: 0, Msg: "success", Uid: user.Id, Token: accessToken})
 		return
 	}
 }
 
+type TokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type TokenResponse struct {
+	Code  int    `json:"code"`
+	Msg   string `json:"msg"`
+	Token string `json:"auth_token"`
+}
+
 func GetAuthToken(ctx *gin.Context) {
-	refreshToken := ctx.Param("refresh_token")
-	authToken := database.GetToken(refreshToken)
-	ctx.String(http.StatusOK, authToken)
+	var req TokenRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: "参数错误"})
+		return
+	}
+	authToken := database.GetToken(req.RefreshToken)
+	if authToken == "" {
+		ctx.JSON(http.StatusForbidden, TokenResponse{Code: 1, Msg: "Refresh token is invalid"})
+		util.LogRus.Errorf("refresh token %s is invalid", req.RefreshToken)
+	} else {
+		ctx.JSON(http.StatusOK, TokenResponse{Code: 0, Msg: "success", Token: authToken})
+	}
 }
