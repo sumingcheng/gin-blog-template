@@ -3,17 +3,22 @@ package util
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"os"
 	"path"
 	"runtime"
 )
 
 var (
-	ProjectRootPath = GetOnCurrentPath() + "/../"
+	ProjectRootPath = getProjectRootPath()
 )
 
-func GetOnCurrentPath() string {
+func getProjectRootPath() string {
+	// 从环境变量获取配置路径，如果未设置，则使用默认路径
+	if rootPath := os.Getenv("CONFIG_PATH"); rootPath != "" {
+		return rootPath
+	}
 	_, filename, _, _ := runtime.Caller(0)
-	return path.Dir(filename)
+	return path.Dir(filename) + "/../"
 }
 
 // CreateConfig 用于创建并读取配置文件
