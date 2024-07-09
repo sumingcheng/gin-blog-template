@@ -6,7 +6,7 @@ COPY ./web .
 RUN apk add --no-cache libc6-compat && \
     npm config set registry https://registry.npmmirror.com/ && \
     npm install -g pnpm && \
-    pnpm install && \
+    pnpm install --force && \
     pnpm run build
 
 FROM golang:1.22.2 AS build2
