@@ -10,5 +10,10 @@ export default defineConfig({
     alias: {
       '@': path.join(__dirname, './src'),
     }
+  },
+  build: {
+    rollupOptions: {
+      external: ['js-md5']
+    }
   }
 })
