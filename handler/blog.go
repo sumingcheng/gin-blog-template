@@ -109,32 +109,45 @@ func BlogUpdate(ctx *gin.Context) {
 	})
 }
 
+type BlogBelongRequest struct {
+	Bid   int    `form:"bid" binding:"required"`
+	Token string `form:"token" binding:"required"`
+}
+
+type BlogBelongResponse struct {
+	Code   int    `json:"code"`
+	Msg    string `json:"msg"`
+	Belong bool   `json:"belong"`
+}
+
 // BlogBelong 检查博客是否属于当前经过认证的用户
 func BlogBelong(ctx *gin.Context) {
-	bids := ctx.Query("bid")
-	token := ctx.Query("token")
-	bid, err := strconv.Atoi(bids)
-	if err != nil {
-		ctx.String(http.StatusBadRequest, "invalid blog id")
+	var req BlogBelongRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, BlogBelongResponse{
+			Code:   1,
+			Msg:    err.Error(),
+			Belong: false,
+		})
 		return
 	}
-	blog := database.GetBlogById(bid)
+
+	blog := database.GetBlogById(req.Bid)
 	if blog == nil {
-		ctx.String(http.StatusBadRequest, "blog id not exists")
+		ctx.JSON(http.StatusBadRequest, BlogBelongResponse{
+			Code:   1,
+			Msg:    "blog id not exists",
+			Belong: false,
+		})
 		return
 	}
-	loginUid := middleware.GetUidFromJwt(token)
-	if loginUid == blog.UserId {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code":   0,
-			"msg":    "success",
-			"belong": true,
-		})
-	} else {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code":   0,
-			"msg":    "success",
-			"belong": false,
-		})
-	}
+
+	loginUid := middleware.GetUidFromJwt(req.Token)
+	belong := loginUid == blog.UserId
+
+	ctx.JSON(http.StatusOK, BlogBelongResponse{
+		Code:   0,
+		Msg:    "success",
+		Belong: belong,
+	})
 }
