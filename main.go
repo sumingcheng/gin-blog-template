@@ -12,11 +12,12 @@ func init() {
 	util.InitLog("log")
 }
 
-//go:embed web/dist/*
-var buildFS embed.FS
-
-//go:embed web/dist/index.html
-var indexPage []byte
+var (
+	//go:embed web/dist/*
+	buildFS embed.FS
+	//go:embed web/dist/index.html
+	indexPage []byte
+)
 
 // 添加注释以描述 server 信息
 // @title           Swagger Example API
