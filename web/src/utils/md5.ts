@@ -1,9 +1,7 @@
-import forge from 'node-forge';
+import md5 from 'js-md5';
 
 export function encryptPassword(input: string): string {
-  let md = forge.md.md5.create();
-  md.update(input);
-  return md.digest().toHex();
+  return md5(input);
 }
 
 
