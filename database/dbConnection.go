@@ -39,8 +39,7 @@ func createMysqlDB(
 	port int,
 ) *gorm.DB {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, pass, host, port, dbname) // mb4表情符号
-	var err error
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: dbLog, PrepareStmt: true}) // 启用PrepareStmt, SQL预编译，提高查询效率
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: dbLog, PrepareStmt: true})                              // 启用PrepareStmt, SQL预编译，提高查询效率
 	if err != nil {
 		util.LogRus.Panicf("connect to mysql use dsn %s failed: %s", dsn, err) // panic() os.Exit(2)
 	}

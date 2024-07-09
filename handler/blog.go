@@ -17,7 +17,7 @@ type BlogListResponse struct {
 
 // BlogList 获取用户的博客列表
 func BlogList(ctx *gin.Context) {
-	uid, err := strconv.Atoi(ctx.Param("uid")) //获取restful参数
+	uid, err := strconv.Atoi(ctx.Param("uid"))
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "invalid uid")
 		return
