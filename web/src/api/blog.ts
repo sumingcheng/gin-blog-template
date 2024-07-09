@@ -10,9 +10,9 @@ export const getBlogUser = async () => {
 };
 
 // 获取博客列表
-export const getBlogList = async () => {
+export const getBlogList = async (uid: number) => {
   const res = await axiosClient({
-    url: '/api/blog/list',
+    url: `/api/blog/list/${ uid }`,
     method: 'get',
   })
   return res.data

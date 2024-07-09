@@ -18,8 +18,8 @@ type LoginResponse struct {
 }
 
 type LoginRequest struct {
-	User string `json:"user"`
-	Pass string `json:"pass"`
+	User string `json:"user" binding:"required,min=1"`  // 用户名必须非空
+	Pass string `json:"pass" binding:"required,len=32"` // 密码必须非空且长度为32
 }
 
 func Login(ctx *gin.Context) {
@@ -28,17 +28,10 @@ func Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: "Invalid request"})
 		return
 	}
+	// 是否已登录
+	CheckRefreshToken(ctx)
 
-	if len(req.User) == 0 {
-		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: "Must indicate user name"})
-		return
-	}
-
-	if len(req.Pass) != 32 {
-		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 2, Msg: "Invalid password"})
-		return
-	}
-
+	// 用户名密码校验
 	user := database.GetUserByName(req.User)
 	if user == nil {
 		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 3, Msg: "User does not exist"})
@@ -71,7 +64,7 @@ func Login(ctx *gin.Context) {
 		ctx.SetCookie("refresh_token", refreshToken, //注意：受cookie本身的限制，这里的token不能超过4K
 			int(database.TokenExpire.Seconds()), //maxAge，cookie的有效时间，时间单位秒。如果不设置过期时间，默认情况下关闭浏览器后cookie被删除
 			"/",                                 //path，cookie存放目录
-			"localhost",                         //cookie从属的域名,不区分协议和端口。如果不指定domain则默认为本host(如b.a.com)，如果指定的domain是一级域名(如a.com)，则二级域名(b.a.com)下也可以访问
+			"",                                  //cookie从属的域名,不区分协议和端口。如果不指定domain则默认为本host(如b.a.com)，如果指定的domain是一级域名(如a.com)，则二级域名(b.a.com)下也可以访问
 			false,                               //是否只能通过https访问
 			true,                                //是否允许别人通过js获取自己的cookie，设为false防止XSS攻击
 		)
@@ -104,4 +97,9 @@ func GetAuthToken(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusOK, TokenResponse{Code: 0, Msg: "success", Token: authToken})
 	}
+}
+
+// CheckRefreshToken 检查 refresh_token 是否有效
+func CheckRefreshToken(ctx *gin.Context) {
+
 }
