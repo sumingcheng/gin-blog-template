@@ -22,8 +22,8 @@ const LoginPage: FC = () => {
       return;
     }
 
+    sessionStorage.setItem('auth_token', res.auth_token)
     showSuccessToast('登录成功');
-    console.log('Username:', username, 'Password:', password);
   };
 
   return (

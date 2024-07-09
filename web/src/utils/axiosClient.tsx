@@ -11,8 +11,8 @@ const axiosClient = axios.create({
 // 请求拦截器
 axiosClient.interceptors.request.use(
   config => {
-    const token = sessionStorage.getItem('token');
-    config.headers.Authorization = `Bearer ${ token }`;
+    const auth_token = sessionStorage.getItem('auth_token');
+    config.headers.Authorization = `Bearer ${ auth_token }`;
     return config;
   },
   error => {
