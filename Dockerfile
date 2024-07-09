@@ -1,9 +1,10 @@
 FROM node:18.17-alpine AS build1
 WORKDIR /web
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 COPY ./web .
 RUN apk add --no-cache libc6-compat && \
-    npm config set registry https://mirrors.huaweicloud.com/repository/npm/ && \
+    npm config set registry https://registry.npmmirror.com/ && \
     npm install -g pnpm && \
     pnpm install && \
     pnpm run build

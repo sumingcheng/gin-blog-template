@@ -1,5 +1,7 @@
-import CryptoJS from 'crypto-js';
+import { createHash } from 'crypto';
 
-export function encryptPassword(password: string): string {
-  return CryptoJS.MD5(password).toString().toLowerCase();
+export function encryptPassword(input: string): string {
+  return createHash('md5').update(input).digest('hex');
 }
+
+
