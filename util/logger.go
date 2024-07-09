@@ -38,7 +38,8 @@ func InitLog(configFile string) {
 	})
 
 	// 设置日志文件路径和轮转策略
-	logFile := ProjectRootPath + viper.GetString("file") // 日志文件路径
+	logFile := "./" + viper.GetString("file") // 日志文件路径
+
 	fout, err := rotatelogs.New(
 		logFile+".%Y%m%d%H", // 日志文件名称格式
 		//rotatelogs.WithLinkName(logFile),         // 设置最新日志的链接
