@@ -30,3 +30,20 @@ func GetToken(refreshToken string) (authToken string) {
 	}
 	return authToken
 }
+
+func VerifyRefreshToken(refreshToken string) (authToken string, valid bool) {
+	client := GetRedisClient()
+	authToken, err := client.Get(context.Background(), TokenPrefix+refreshToken).Result()
+
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			util.LogRus.Errorf("Refresh token %s does not exist or has expired", refreshToken)
+			return "", false
+		} else {
+			util.LogRus.Errorf("Error retrieving auth token for refresh token %s: %s", refreshToken, err)
+			return "", false
+		}
+	}
+
+	return authToken, true
+}

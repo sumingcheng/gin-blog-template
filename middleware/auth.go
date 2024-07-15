@@ -45,12 +45,10 @@ func GetLoginUid(ctx *gin.Context) int {
 		}
 	}
 
-	// 如果仍没有token，则返回uid为0，表示未登录或未授权
 	if token == "" {
 		return 0
 	}
 
-	// 调用GetUidFromJwt函数解析JWT，获取用户uid
 	return GetUidFromJwt(token)
 }
 
@@ -64,8 +62,7 @@ func Auth() gin.HandlerFunc {
 				"msg":  "未登录或登录已过期",
 			})
 
-			ctx.Abort() // 调用Abort()后中间件和后续的handler不再执行
-			// 但是之前的handler还是会继续执行。所以不一定任何处理都需要return
+			ctx.Abort()
 		} else {
 			ctx.Set("uid", loginUid) // 把登录的uid放入ctx中
 			ctx.Next()

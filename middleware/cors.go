@@ -1,27 +1,18 @@
 package middleware
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"time"
 )
 
-// CORSMiddleware
-// Access-Control-Allow-Origin: 允许所有域进行跨域请求（*）。在生产环境中，你可能希望将其设置为特定的域名。
-// Access-Control-Allow-Credentials: 允许携带证书（如 cookies）。
-// Access-Control-Allow-Headers: 指定了浏览器允许访问的头部。
-// Access-Control-Allow-Methods: 定义允许的 HTTP 方法。
 func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Auth_token, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(http.StatusNoContent)
-			return
-		}
-
-		c.Next()
-	}
+	return cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},                                                                                // 允许所有源
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},                                            // 允许的 HTTP 方法
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Auth_token", "Authorization", "Refresh_token"}, // 允许的请求头
+		ExposeHeaders:    []string{"Content-Length"},                                                                   // 允许暴露给浏览器的响应头
+		AllowCredentials: true,                                                                                         // 允许凭证
+		MaxAge:           12 * time.Hour,                                                                               // 预检请求的缓存时间
+	})
 }

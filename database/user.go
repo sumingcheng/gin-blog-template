@@ -7,9 +7,9 @@ import (
 )
 
 type User struct {
-	Id     int `gorm:"column:id;primaryKey"`
-	Name   string
-	PassWd string `gorm:"column:password"`
+	Id     int    `gorm:"column:id;primaryKey" json:"id"`
+	Name   string `gorm:"column:name" json:"name"`
+	PassWd string `gorm:"column:password" json:"passWd"`
 }
 
 func (User) TableName() string {
@@ -27,7 +27,7 @@ func GetUserByName(name string) *User {
 
 	if err := db.Select(allUserField).Where("name=?", name).First(&user).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			util.LogRus.Errorf("get password of user %s failed: %s", name, err) // 系统性异常，才打错误日志
+			util.LogRus.Errorf("get password of user %s failed: %s", name, err)
 		}
 		return nil
 	}
