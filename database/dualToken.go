@@ -10,18 +10,16 @@ import (
 
 const (
 	TokenPrefix = "dual_token_"
-	TokenExpire = 7 * 24 * time.Hour //一次登录7天有效
+	TokenExpire = 7 * 24 * time.Hour // 7天
 )
 
-// SetToken 把<refreshToken, authToken>写入redis
 func SetToken(refreshToken, authToken string) {
 	client := GetRedisClient()
-	if err := client.Set(context.Background(), TokenPrefix+refreshToken, authToken, TokenExpire).Err(); err != nil { //7天之后就拿不到authToken了
+	if err := client.Set(context.Background(), TokenPrefix+refreshToken, authToken, TokenExpire).Err(); err != nil {
 		util.LogRus.Errorf("write token pair(%s, %s) to redis failed: %s", refreshToken, authToken, err)
 	}
 }
 
-// GetToken 根据refreshToken获取authToken
 func GetToken(refreshToken string) (authToken string) {
 	client := GetRedisClient()
 	var err error

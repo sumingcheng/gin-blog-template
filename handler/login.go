@@ -18,8 +18,8 @@ type LoginResponse struct {
 }
 
 type LoginRequest struct {
-	User string `json:"user" binding:"required,min=1"`  // 用户名必须非空
-	Pass string `json:"pass" binding:"required,len=32"` // 密码必须非空且长度为32
+	User string `json:"user" binding:"required,min=1"`
+	Pass string `json:"pass" binding:"required,len=32"`
 }
 
 func Login(ctx *gin.Context) {

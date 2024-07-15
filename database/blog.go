@@ -24,9 +24,9 @@ var (
 	allBlogField = util.GetGormFields(Blog{})
 )
 
-// GetBlogById 根据 ID 获取博客
+// GetBlogById 根据 ID 获取博客内容
 func GetBlogById(id int) *Blog {
-	db := GetBlogDBConnection() // 获取数据库连接
+	db := GetBlogDBConnection()
 	var blog Blog
 	if err := db.Select(allBlogField).Where("id = ?", id).First(&blog).Error; err != nil {
 		// 如果记录未找到，记录错误，返回 nil
@@ -40,10 +40,9 @@ func GetBlogById(id int) *Blog {
 
 // GetBlogByUserId 根据用户 ID 获取博客列表
 func GetBlogByUserId(uid int) []*Blog {
-	db := GetBlogDBConnection() // 获取数据库连接
+	db := GetBlogDBConnection()
 	var blogs []*Blog
 	if err := db.Select(allBlogField).Where("user_id = ?", uid).Find(&blogs).Error; err != nil {
-		// 如果查询失败，记录错误，并返回 nil
 		if !errors.Is(gorm.ErrRecordNotFound, err) {
 			util.LogRus.Errorf("get blogs of user %d failed: %s", uid, err)
 		}
@@ -52,7 +51,7 @@ func GetBlogByUserId(uid int) []*Blog {
 	return blogs
 }
 
-// UpdateBlog 根据指定id更新文章正文
+// UpdateBlog 根据博客 ID 更新博客内容
 func UpdateBlog(blog *Blog) error {
 	if blog.Id <= 0 {
 		return fmt.Errorf("could not update blog of id %d", blog.Id)

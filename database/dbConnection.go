@@ -23,35 +23,6 @@ var (
 	blogRedisOnce sync.Once
 )
 
-func init() {
-	dbLog = ormlog.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		ormlog.Config{
-			SlowThreshold: 100 * time.Millisecond, // 设置 SQL 阈值
-			LogLevel:      ormlog.Silent,          // Log level, Silent表示不输出日志
-			Colorful:      true,                   // 彩色日志打印
-		},
-	)
-}
-
-func createMysqlDB(
-	dbname, host, user, pass string,
-	port int,
-) *gorm.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, pass, host, port, dbname) // mb4表情符号
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: dbLog, PrepareStmt: true})                              // 启用PrepareStmt, SQL预编译，提高查询效率
-	if err != nil {
-		util.LogRus.Panicf("connect to mysql use dsn %s failed: %s", dsn, err) // panic() os.Exit(2)
-	}
-
-	// 设置数据库连接池参数，提高并发性能
-	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(100) // 设置数据库连接池最大连接数
-	sqlDB.SetMaxIdleConns(20)  // 设置连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超出的连接会被连接池关闭。
-	util.LogRus.Infof("connect to mysql db %s", dbname)
-	return db
-}
-
 func GetBlogDBConnection() *gorm.DB {
 	// 并发安全的单例模式
 	blogMysqlOnce.Do(func() {
@@ -68,6 +39,38 @@ func GetBlogDBConnection() *gorm.DB {
 	return blogMysql
 }
 
+func createMysqlDB(
+	dbname, host, user, pass string,
+	port int,
+) *gorm.DB {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, pass, host, port, dbname)
+	db, err := gorm.Open(
+		mysql.Open(dsn), &gorm.Config{
+			Logger: ormlog.New(
+				log.New(os.Stdout, "\r\n", log.LstdFlags),
+				ormlog.Config{
+					SlowThreshold: 100 * time.Millisecond, // 设置 SQL 阈值
+					LogLevel:      ormlog.Silent,          // Silent表示不输出日志
+					Colorful:      true,                   // 彩色日志打印
+				},
+			),
+			PrepareStmt: true, // 启用PrepareStmt, SQL预编译，提高查询效率
+		},
+	)
+
+	if err != nil {
+		util.LogRus.Panicf("connect to mysql use dsn %v failed: %v", dsn, err)
+	}
+
+	// 设置数据库连接池参数，提高并发性能
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxOpenConns(100) // 设置数据库连接池最大连接数
+	sqlDB.SetMaxIdleConns(20)  // 设置连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超出的连接会被连接池关闭。
+	util.LogRus.Infof("connect to mysql db %v", dbname)
+
+	return db
+}
+
 func createRedisClient(
 	address, passwd string,
 	db int,
@@ -78,10 +81,11 @@ func createRedisClient(
 		Password: passwd,
 		DB:       db,
 	})
+	// PING redis
 	if err := cli.Ping(context.Background()).Err(); err != nil {
 		util.LogRus.Panicf("connect to redis %d failed %v", db, err)
 	} else {
-		util.LogRus.Infof("connect to redis %d", db) //能ping成功才说明连接成功
+		util.LogRus.Infof("connect to redis %d", db)
 	}
 	return cli
 }
@@ -91,10 +95,11 @@ func GetRedisClient() *redis.Client {
 		if blogRedis == nil {
 			viper := util.CreateConfig("redis")
 			addr := viper.GetString("addr")
-			pass := viper.GetString("pass") //没对该配置项时，viper会赋默认值(即零值)，不会报错
+			pass := viper.GetString("pass")
 			db := viper.GetInt("db")
 			blogRedis = createRedisClient(addr, pass, db)
 		}
 	})
+
 	return blogRedis
 }

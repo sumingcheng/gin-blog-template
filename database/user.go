@@ -26,7 +26,7 @@ func GetUserByName(name string) *User {
 	var user User
 
 	if err := db.Select(allUserField).Where("name=?", name).First(&user).Error; err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) { // 如果是用户名不存在，不需要打错误日志
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			util.LogRus.Errorf("get password of user %s failed: %s", name, err) // 系统性异常，才打错误日志
 		}
 		return nil
@@ -34,25 +34,22 @@ func GetUserByName(name string) *User {
 	return &user
 }
 
-// CreateUser 创建一个用户
 func CreateUser(name, pass string) {
-	db := GetBlogDBConnection()                    // 获取数据库连接
-	pass = util.Md5(pass)                          // 使用MD5加密密码
-	user := User{Name: name, PassWd: pass}         // 创建用户实例
-	if err := db.Create(&user).Error; err != nil { // 创建用户
-		// 注意 Create(&user) 这里传递结构体指针是因为 GORM 背后要修改这个user的主键ID
-		// 如果调用成功了, 你需要通过 Create 函数去修改 user 的 Id 字段 所以需要传递指针
-		util.LogRus.Errorf("create user %s failed: %s", name, err) // 创建失败，记录错误
+	db := GetBlogDBConnection()
+	pass = util.Md5(pass)
+	user := User{Name: name, PassWd: pass}
+	// &user 传递指针，以便在创建后获取 ID
+	if err := db.Create(&user).Error; err != nil {
+		util.LogRus.Errorf("create user %s failed: %s", name, err)
 	} else {
-		util.LogRus.Infof("create user id %d", user.Id) // 创建成功，记录用户ID
+		util.LogRus.Infof("create user id %d", user.Id)
 	}
 }
 
-// DeleteUser 删除一个用户
 func DeleteUser(name string) {
-	db := GetBlogDBConnection()                                           // 获取数据库连接
-	if err := db.Where("name=?", name).Delete(User{}).Error; err != nil { // 删除指定用户名的用户
-		// 注意 Delete(User{}) 这里传递结构体的目的是为了找到表明
-		util.LogRus.Errorf("delete user %s failed: %s", name, err) // 删除失败，记录错误
+	db := GetBlogDBConnection()
+	// User{} 主要用于指明操作应该影响哪个表
+	if err := db.Where("name=?", name).Delete(User{}).Error; err != nil {
+		util.LogRus.Errorf("delete user %s failed: %s", name, err)
 	}
 }

@@ -8,13 +8,13 @@ import (
 )
 
 func SetApiRouter(router *gin.Engine) {
-	apiRouter := router.Group("/api")
+	api := router.Group("/api")
 	// 接口
-	apiRouter.POST("/login", handler.Login)
-	apiRouter.POST("/token", handler.GetAuthToken)
+	api.POST("/login", handler.Login)
+	api.POST("/token", handler.GetAuthToken)
 
-	apiRouter.POST("/blog/belong", handler.BlogBelong)
-	apiRouter.GET("/blog/list/:uid", handler.BlogList)
-	apiRouter.GET("/blog/:bid", handler.BlogDetail)
-	apiRouter.POST("/blog/update", middleware.Auth(), handler.BlogUpdate)
+	api.POST("/blog/belong", handler.BlogBelong)
+	api.GET("/blog/list/:uid", handler.BlogList)
+	api.GET("/blog/:bid", handler.BlogDetail)
+	api.POST("/blog/update", middleware.Auth(), handler.BlogUpdate)
 }
