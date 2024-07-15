@@ -59,9 +59,9 @@ func Auth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		loginUid := GetLoginUid(ctx)
 		if loginUid <= 0 {
-			ctx.JSON(http.StatusForbidden, gin.H{
-				"code": 403,
-				"msg":  "auth failed 未登录或登录已过期",
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  "未登录或登录已过期",
 			})
 
 			ctx.Abort() // 调用Abort()后中间件和后续的handler不再执行
