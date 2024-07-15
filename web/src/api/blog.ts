@@ -1,7 +1,7 @@
 import axiosClient from "../utils/axiosClient.tsx";
 
 // 获取博客是属于哪个用户
-export const getBelong = async (data: {bid: number, token: string}) => {
+export const getBelong = async (data: {bid: number}) => {
   const res = await axiosClient({
     url: `/api/blog/belong`,
     method: 'POST',

@@ -110,8 +110,8 @@ func BlogUpdate(ctx *gin.Context) {
 }
 
 type BlogBelongRequest struct {
-	Bid   int    `form:"bid" binding:"required"`
-	Token string `form:"token" binding:"required"`
+	Bid int `form:"bid" binding:"required"`
+	//Token string `form:"token" binding:"required"`
 }
 
 type BlogBelongResponse struct {
@@ -142,7 +142,8 @@ func BlogBelong(ctx *gin.Context) {
 		return
 	}
 
-	loginUid := middleware.GetUidFromJwt(req.Token)
+	token := ctx.Request.Header.Get("auth_token")
+	loginUid := middleware.GetUidFromJwt(token)
 	belong := loginUid == blog.UserId
 
 	ctx.JSON(http.StatusOK, BlogBelongResponse{

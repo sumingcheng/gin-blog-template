@@ -8,12 +8,10 @@ import { getBelong } from "../api/blog.ts";
 const Header: FC = () => {
   const navigate = useNavigate();
   const { showWarningToast } = useCustomToast();
-  ``
   const handleNavigation = async (path: string) => {
     if (path === '/') {
       const res = await getBelong({
         "bid": 1,
-        "token": sessionStorage.getItem('token') || ''
       });
       if (res.belong) {
         navigate(path);
