@@ -28,7 +28,7 @@ func init() {
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		ormlog.Config{
 			SlowThreshold: 100 * time.Millisecond, // 设置 SQL 阈值
-			LogLevel:      ormlog.Info,            // Log level, Silent表示不输出日志
+			LogLevel:      ormlog.Silent,          // Log level, Silent表示不输出日志
 			Colorful:      true,                   // 彩色日志打印
 		},
 	)

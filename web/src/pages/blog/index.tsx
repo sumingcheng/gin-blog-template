@@ -2,6 +2,7 @@ import { Box, Button, Flex, Heading, Text, useColorModeValue, VStack } from '@ch
 import { FC, memo, useCallback, useEffect, useState } from "react";
 import { getBlogList } from "../../api/blog";
 import { useNavigate } from "react-router-dom";
+import useCustomToast from "../../hooks/useCustomToast.tsx";
 
 interface BlogPostProps {
   id: number;
@@ -13,7 +14,6 @@ interface BlogPostProps {
 
 const BlogPost: FC<BlogPostProps> = memo(({ id, userId, title, article, updateTime }) => {
   const navigate = useNavigate();
-
   const edit = ((id: number) => {
     navigate(`/edit/?id=${ id }`);
   })
@@ -44,6 +44,7 @@ const BlogPost: FC<BlogPostProps> = memo(({ id, userId, title, article, updateTi
 
 const BlogPage: FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPostProps[]>([]);
+  const { showWarningToast } = useCustomToast();
 
   const fetchBlogs = useCallback(async () => {
     try {
@@ -51,8 +52,11 @@ const BlogPage: FC = () => {
       if (res) {
         setBlogPosts(res.blogs);
       }
+      if (res.code == 403) {
+        showWarningToast(res.msg);
+      }
     } catch (error) {
-      console.error('Failed to fetch blogs:', error);
+      console.log('无法获取博客:', error);
     }
   }, []);
 
@@ -62,7 +66,7 @@ const BlogPage: FC = () => {
 
   return (
     <Box p={ 8 } h="full" bg={ useColorModeValue('white', 'gray.700') }>
-      { blogPosts.map((post) => (
+      { blogPosts && blogPosts.map((post) => (
         <BlogPost key={ post.id } { ...post } />
       )) }
     </Box>

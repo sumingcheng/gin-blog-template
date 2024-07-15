@@ -16,7 +16,7 @@ const Header: FC = () => {
       if (res.belong) {
         navigate(path);
       } else {
-        showWarningToast('请先登录！');
+        showWarningToast('登录后可以查看！');
       }
     } else {
       navigate(path);
