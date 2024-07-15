@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Heading, Text, useColorModeValue, VStack } from '@chakra-ui/react';
 import { FC, memo, useCallback, useEffect, useState } from "react";
-import { getBlogList } from "../../api/blog";
+import { getBelong, getBlogList } from "../../api/blog";
 import { useNavigate } from "react-router-dom";
 import useCustomToast from "../../hooks/useCustomToast.tsx";
 
@@ -14,8 +14,16 @@ interface BlogPostProps {
 
 const BlogPost: FC<BlogPostProps> = memo(({ id, userId, title, article, updateTime }) => {
   const navigate = useNavigate();
-  const edit = ((id: number) => {
-    navigate(`/edit/?id=${ id }`);
+  const { showInfoToast } = useCustomToast();
+
+  const edit = (async (id: number) => {
+    const res = await getBelong({ bid: id });
+
+    if (res.belong) {
+      navigate(`/edit/?id=${ id }`);
+    } else {
+      showInfoToast('您无权修改此博客，请登录后再试');
+    }
   })
 
   return (

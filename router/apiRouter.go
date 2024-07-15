@@ -14,7 +14,7 @@ func SetApiRouter(router *gin.Engine) {
 	apiRouter.POST("/token", handler.GetAuthToken)
 
 	apiRouter.POST("/blog/belong", handler.BlogBelong)
-	apiRouter.GET("/blog/list/:uid", middleware.Auth(), handler.BlogList)
+	apiRouter.GET("/blog/list/:uid", handler.BlogList)
 	apiRouter.GET("/blog/:bid", handler.BlogDetail)
 	apiRouter.POST("/blog/update", middleware.Auth(), handler.BlogUpdate)
 }
