@@ -36,7 +36,7 @@ func BlogDetail(ctx *gin.Context) {
 	blogId := ctx.Param("bid") //获取restful参数
 	bid, err := strconv.Atoi(blogId)
 	if err != nil {
-		ctx.String(http.StatusBadRequest, "invalid blog id")
+		ctx.String(http.StatusBadRequest, "博客id 无效")
 		return
 	}
 
@@ -124,7 +124,7 @@ type BlogBelongResponse struct {
 func BlogBelong(ctx *gin.Context) {
 	var req BlogBelongRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, BlogBelongResponse{
+		ctx.JSON(http.StatusOK, BlogBelongResponse{
 			Code:   1,
 			Msg:    err.Error(),
 			Belong: false,
@@ -134,7 +134,7 @@ func BlogBelong(ctx *gin.Context) {
 
 	blog := database.GetBlogById(req.Bid)
 	if blog == nil {
-		ctx.JSON(http.StatusBadRequest, BlogBelongResponse{
+		ctx.JSON(http.StatusOK, BlogBelongResponse{
 			Code:   1,
 			Msg:    "blog id not exists",
 			Belong: false,
