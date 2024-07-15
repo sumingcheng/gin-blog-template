@@ -55,8 +55,8 @@ func Login(ctx *gin.Context) {
 	util.LogRus.Infof("user %s(%d) login", req.User, user.Id)
 
 	// 用户名、密码正确，生成 token
-	header := util.DefaultHeader // 默认JWT头部信息，定义在 util 包中
-	payload := util.JwtPayload{  // payload以明文形式编码在token中，server 用自己的密钥可以校验该信息是否被篡改过
+	header := util.DefaultHeader
+	payload := util.JwtPayload{
 		Issue:       "blog",
 		IssueAt:     time.Now().Unix(),                                               // 因为每次的IssueAt不同，所以每次生成的token也不同
 		Expiration:  time.Now().Add(database.TokenExpire).Add(24 * time.Hour).Unix(), // (7+1)天后过期，需要重新登录，假设24小时内用户肯定要重启浏览器
