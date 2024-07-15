@@ -3,11 +3,13 @@ import { Box, Button, FormControl, FormLabel, Heading, Input, VStack } from '@ch
 import useCustomToast from "../../hooks/useCustomToast.tsx";
 import { login } from "../../api/user.ts";
 import { encryptPassword } from "../../utils/md5.ts";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage: FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { showWarningToast, showSuccessToast } = useCustomToast();
+  const navigate = useNavigate();
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
@@ -24,6 +26,7 @@ const LoginPage: FC = () => {
 
     sessionStorage.setItem('auth_token', res.auth_token)
     showSuccessToast('登录成功');
+    navigate('/blog');
   };
 
   return (
@@ -54,7 +57,7 @@ const LoginPage: FC = () => {
             type="text"
             value={ username }
             onChange={ (e) => setUsername(e.target.value) }
-            placeholder="请输入您的用户名"
+            placeholder="用户名:admin"
             autoComplete="username"
           />
         </FormControl>
@@ -64,7 +67,7 @@ const LoginPage: FC = () => {
             type="password"
             value={ password }
             onChange={ (e) => setPassword(e.target.value) }
-            placeholder="请输入您的密码"
+            placeholder="密码:123456"
             autoComplete="current-password"
           />
         </FormControl>

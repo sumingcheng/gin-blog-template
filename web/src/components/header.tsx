@@ -2,19 +2,40 @@ import { FC } from "react";
 import { Tab, TabList, Tabs } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
+import useCustomToast from "../hooks/useCustomToast.tsx";
+import { getBelong } from "../api/blog.ts";
+
 const Header: FC = () => {
   const navigate = useNavigate();
+  const { showWarningToast } = useCustomToast();
+  ``
+  const handleNavigation = async (path: string) => {
+    if (path === '/') {
+      const res = await getBelong({
+        "bid": 1,
+        "token": sessionStorage.getItem('token') || ''
+      });
+      if (res.belong) {
+        navigate(path);
+      } else {
+        showWarningToast('请先登录！');
+      }
+    } else {
+      navigate(path);
+    }
+  };
 
   return (
     <header>
       <Tabs align='end' variant='enclosed'>
         <TabList>
-          <Tab onClick={ () => navigate('/login') }>LOGIN</Tab>
-          <Tab onClick={ () => navigate('/blog') }>BLOG</Tab>
-          <Tab onClick={ () => navigate('/') }>HOME</Tab>
+          <Tab onClick={ () => handleNavigation('/login') }>LOGIN</Tab>
+          <Tab onClick={ () => handleNavigation('/blog') }>BLOG</Tab>
+          <Tab onClick={ () => handleNavigation('/') }>HOME</Tab>
         </TabList>
       </Tabs>
     </header>
   );
 }
+
 export default Header;

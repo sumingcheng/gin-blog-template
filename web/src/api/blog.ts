@@ -1,10 +1,11 @@
 import axiosClient from "../utils/axiosClient.tsx";
 
 // 获取博客是属于哪个用户
-export const getBlogUser = async () => {
+export const getBelong = async (data: {bid: number, token: string}) => {
   const res = await axiosClient({
     url: `/api/blog/belong`,
-    method: 'get',
+    method: 'POST',
+    data
   })
   return res.data
 };
