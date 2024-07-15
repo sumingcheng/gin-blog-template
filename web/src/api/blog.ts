@@ -29,7 +29,7 @@ export const getBlogDetail = async (bid: string) => {
 };
 
 // 更新博客
-export const updateBlog = async (data: object[]) => {
+export const updateBlog = async (data: {blogId: number, title: string, article: string}) => {
   const res = await axiosClient({
     url: `/api/blog/update`,
     method: 'post',

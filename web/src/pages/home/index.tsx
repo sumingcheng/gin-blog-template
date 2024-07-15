@@ -9,7 +9,7 @@ const Home: FC = () => {
 
   const logout = () => {
     navigate('/login');
-    showSuccessToast('退出登录成功');
+    showSuccessToast('已注销');
     sessionStorage.removeItem('auth_token');
   }
 
