@@ -43,12 +43,12 @@ func Login(ctx *gin.Context) {
 	// 用户名密码校验
 	user := database.GetUserByName(req.User)
 	if user == nil {
-		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 3, Msg: "用户不存在"})
+		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 1, Msg: "用户不存在"})
 		return
 	}
 
 	if user.PassWd != req.Pass {
-		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 4, Msg: "密码不正确"})
+		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 1, Msg: "密码不正确"})
 		return
 	}
 
@@ -62,8 +62,9 @@ func Login(ctx *gin.Context) {
 		Expiration:  time.Now().Add(database.TokenExpire).Add(24 * time.Hour).Unix(), // (7+1)天后过期，需要重新登录，假设24小时内用户肯定要重启浏览器
 		UserDefined: map[string]string{middleware.UidInToken: strconv.Itoa(user.Id)}, // 用户自定义字段。如果token里包含敏感信息，需结合https使用
 	}
+	secret := middleware.KeyConfig.GetString("jwt")
 
-	if accessToken, err := util.GenJWT(header, payload, middleware.KeyConfig.GetString("jwt")); err != nil {
+	if authToken, err := util.GenJWT(header, payload, secret); err != nil {
 		util.LogRus.Errorf("Failed to generate token: %s", err)
 		ctx.JSON(http.StatusOK, LoginResponse{Code: 5, Msg: "Token 生成失败"})
 		return
@@ -74,7 +75,7 @@ func Login(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, LoginResponse{Code: 6, Msg: "Refresh token 生成失败"})
 			return
 		}
-		database.SetToken(refreshToken, accessToken)
+		database.SetToken(refreshToken, authToken)
 		ctx.SetCookie("refresh_token", refreshToken, // 受cookie本身的限制，这里的token不能超过4K
 			int(database.TokenExpire.Seconds()), // maxAge，cookie的有效时间，时间单位秒。如果不设置过期时间，默认情况下关闭浏览器后cookie被删除
 			"/",                                 // path，cookie存放目录
@@ -82,7 +83,7 @@ func Login(ctx *gin.Context) {
 			false,                               // 是否只能通过https访问
 			true,                                // 是否允许别人通过js获取自己的cookie，设为false防止XSS攻击
 		)
-		ctx.JSON(http.StatusOK, LoginResponse{Code: 0, Msg: "success", Uid: user.Id, Token: accessToken})
+		ctx.JSON(http.StatusOK, LoginResponse{Code: 0, Msg: "success", Uid: user.Id, Token: authToken})
 		return
 	}
 }

@@ -1,10 +1,12 @@
 import axios from 'axios';
 
+// 获取当前环境
 const axiosClient = axios.create({
-  baseURL: 'http://127.0.0.1:5678',
+  baseURL: 'http://localhost:5678',
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   },
+  withCredentials: import.meta.env.VITE_APP_ENV === 'development'  // 允许携带跨域cookies
 });
 
 // 请求拦截器

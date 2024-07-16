@@ -41,8 +41,8 @@ func main() {
 	trustedProxies := []string{"0.0.0.0/0"}
 	err := server.SetTrustedProxies(trustedProxies)
 
-	server.Use(middleware.Metric())
 	server.Use(middleware.CORSMiddleware())
+	server.Use(middleware.Metric())
 
 	router.SetRouter(server, buildFS, indexPage)
 

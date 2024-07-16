@@ -33,27 +33,24 @@ func GetUidFromJwt(jwt string) int {
 
 // GetLoginUid 从header里获取jwt, 从而得出uid
 func GetLoginUid(ctx *gin.Context) int {
-	// 优先尝试从request header里获取名为"auth_token"的token
-	token := ctx.Request.Header.Get("auth_token")
-	// 如果头部没有"auth_token"，尝试从Cookie里的"refresh_token"获取，通常用于刷新会话
-	if token == "" {
-		for _, cookie := range ctx.Request.Cookies() {
-			if cookie.Name == "refresh_token" {
-				token = cookie.Value
-				break // 找到refresh_token后停止循环
-			}
-		}
+	// 尝试从request header获取"auth_token"
+	authToken := ctx.Request.Header.Get("auth_token")
+	if authToken != "" {
+		return GetUidFromJwt(authToken)
 	}
 
-	if token == "" {
-		return 0
+	// 若"auth_token"不存在，尝试从Cookie获取"refresh_token"
+	refreshCookie, err := ctx.Request.Cookie("refresh_token")
+	if err == nil && refreshCookie != nil {
+		return GetUidFromJwt(refreshCookie.Value)
 	}
 
-	return GetUidFromJwt(token)
+	// 如果两者都没有找到有效的token，返回0
+	return 0
 }
 
-// Auth 身份认证中间件，无授权则返回禁止状态
-func Auth() gin.HandlerFunc {
+// VerifyLogin 身份认证中间件，无授权则返回禁止状态
+func VerifyLogin() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		loginUid := GetLoginUid(ctx)
 		if loginUid <= 0 {
