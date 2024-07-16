@@ -18,7 +18,7 @@ type LoginResponse struct {
 }
 
 type LoginRequest struct {
-	User string `json:"user" binding:"required,min=1"`
+	User string `json:"user" binding:"required,min=3"`
 	Pass string `json:"pass" binding:"required,len=32"`
 }
 
@@ -36,19 +36,19 @@ func Login(ctx *gin.Context) {
 	// 未登录，登录流程
 	var req LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: "Invalid request"})
+		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: util.TranslateErrors(err)})
 		return
 	}
 
 	// 用户名密码校验
 	user := database.GetUserByName(req.User)
 	if user == nil {
-		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 3, Msg: "User does not exist"})
+		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 3, Msg: "用户不存在"})
 		return
 	}
 
 	if user.PassWd != req.Pass {
-		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 4, Msg: "Password incorrect"})
+		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 4, Msg: "密码不正确"})
 		return
 	}
 
@@ -65,13 +65,13 @@ func Login(ctx *gin.Context) {
 
 	if accessToken, err := util.GenJWT(header, payload, middleware.KeyConfig.GetString("jwt")); err != nil {
 		util.LogRus.Errorf("Failed to generate token: %s", err)
-		ctx.JSON(http.StatusOK, LoginResponse{Code: 5, Msg: "Token generation failed"})
+		ctx.JSON(http.StatusOK, LoginResponse{Code: 5, Msg: "Token 生成失败"})
 		return
 	} else {
 		refreshToken, err := util.GetRefreshToken()
 		if err != nil {
 			util.LogRus.Errorf("Failed to generate refresh token: %s", err)
-			ctx.JSON(http.StatusOK, LoginResponse{Code: 6, Msg: "Refresh token generation failed"})
+			ctx.JSON(http.StatusOK, LoginResponse{Code: 6, Msg: "Refresh token 生成失败"})
 			return
 		}
 		database.SetToken(refreshToken, accessToken)
@@ -98,8 +98,8 @@ func GetAuthToken(ctx *gin.Context) {
 	authToken := database.GetToken(req.RefreshToken)
 
 	if authToken == "" {
-		ctx.JSON(http.StatusForbidden, TokenResponse{Code: 1, Msg: "Refresh token is invalid"})
-		util.LogRus.Errorf("refresh token %s is invalid", req.RefreshToken)
+		ctx.JSON(http.StatusForbidden, TokenResponse{Code: 1, Msg: "Refresh token 无效"})
+		util.LogRus.Errorf("refresh token %s 无效", req.RefreshToken)
 	} else {
 		ctx.JSON(http.StatusOK, TokenResponse{Code: 0, Msg: "success", Token: authToken})
 	}

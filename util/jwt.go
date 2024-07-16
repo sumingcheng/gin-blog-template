@@ -11,13 +11,11 @@ import (
 	"time"
 )
 
-// JwtHeader 定义JWT的Header部分结构
 type JwtHeader struct {
 	Algo string `json:"alg"` // 使用的算法, 比如HMAC SHA256
 	Type string `json:"typ"` // Token的类型，这里是JWT
 }
 
-// JwtPayload 定义JWT的Payload部分结构
 type JwtPayload struct {
 	ID          string            `json:"jti"` // Token的ID
 	Issue       string            `json:"iss"` // 发行者

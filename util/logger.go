@@ -13,8 +13,8 @@ var (
 )
 
 func InitLog(configFile string) {
-	viper := CreateConfig(configFile) // 创建配置管理器
-	LogRus = logrus.New()             // 实例化一个新的Logger
+	viper := CreateConfig(configFile)
+	LogRus = logrus.New()
 
 	// 根据配置文件设置日志级别
 	switch strings.ToLower(viper.GetString("level")) {
