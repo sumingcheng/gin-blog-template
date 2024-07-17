@@ -13,6 +13,12 @@ const Header: FC = () => {
       const res = await getBelong({
         "bid": 1,
       });
+
+      if (res.code === 401) {
+        showWarningToast('登录后查看HOME');
+        return;
+      }
+
       if (res.belong) {
         navigate(path);
       } else {

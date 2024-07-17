@@ -1,5 +1,5 @@
-import { FC, FormEvent, useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Heading, Input, VStack } from '@chakra-ui/react';
+import { FC, FormEvent, useEffect, useState } from 'react';
+import { Box, Button, FormControl, FormLabel, Heading, Input, Text, VStack } from '@chakra-ui/react';
 import useCustomToast from "../../hooks/useCustomToast.tsx";
 import { login } from "../../api/user.ts";
 import { encryptPassword } from "../../utils/md5.ts";
@@ -8,8 +8,13 @@ import { useNavigate } from "react-router-dom";
 const LoginPage: FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [authToken, setAuthToken] = useState('');
   const { showWarningToast, showSuccessToast } = useCustomToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setAuthToken(sessionStorage.getItem('auth_token') || '');
+  }, []);
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
@@ -28,6 +33,30 @@ const LoginPage: FC = () => {
     showSuccessToast('登录成功');
     navigate('/blog');
   };
+
+  if (authToken) {
+    return (
+      <Box
+        minH="full"
+        width="full"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        marginTop={ "5%" }
+      >
+        <VStack
+          spacing={ 4 }
+          w="full"
+          maxW="md"
+          rounded="md"
+          boxShadow="xs"
+          p={ 8 }
+        >
+          <Text fontSize="xl">您已登录</Text>
+        </VStack>
+      </Box>
+    );
+  }
 
   return (
     <Box
