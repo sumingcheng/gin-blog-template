@@ -89,18 +89,17 @@ func Login(ctx *gin.Context) {
 }
 
 func GetAuthToken(ctx *gin.Context) {
-	var req TokenRequest
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: "参数错误"})
+	refreshToken, err := ctx.Cookie("refresh_token")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, TokenResponse{Code: 1, Msg: "未找到Refresh Token"})
 		return
 	}
 
-	authToken := database.GetToken(req.RefreshToken)
+	authToken := database.GetToken(refreshToken)
 
 	if authToken == "" {
 		ctx.JSON(http.StatusForbidden, TokenResponse{Code: 1, Msg: "Refresh token 无效"})
-		util.LogRus.Errorf("refresh token %s 无效", req.RefreshToken)
+		util.LogRus.Errorf("refresh token %s 无效", refreshToken)
 	} else {
 		ctx.JSON(http.StatusOK, TokenResponse{Code: 0, Msg: "success", Token: authToken})
 	}

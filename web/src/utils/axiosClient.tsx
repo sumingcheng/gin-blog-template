@@ -13,6 +13,7 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   config => {
     const auth_token = sessionStorage.getItem('auth_token');
+
     config.headers.auth_token = `${ auth_token }`;
     return config;
   },

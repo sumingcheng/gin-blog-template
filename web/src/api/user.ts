@@ -11,11 +11,10 @@ export const login = async (data: {user: string, pass: string}) => {
 };
 
 // 获取token
-export const getToken = async (data: object[]) => {
+export const getAuthToken = async () => {
   const res = await axiosClient({
     url: '/api/token',
-    method: 'post',
-    data,
+    method: 'get',
   })
   return res.data
 };
