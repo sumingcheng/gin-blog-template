@@ -7,7 +7,7 @@ build:
 	@docker build -t $(IMAGE_NAME) .
 
 run:
-	@docker run -d --name $(CONTAINER_NAME) -p $(EXTERNAL_PORT):$(INTERNAL_PORT) $(IMAGE_NAME)
+	@docker run -d --name $(CONTAINER_NAME) -p $(EXTERNAL_PORT):$(INTERNAL_PORT) $(IMAGE_NAME) -v /home/logs:/logs
 
 stop:
 	@docker stop $(CONTAINER_NAME)
