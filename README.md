@@ -12,21 +12,14 @@
 </p>
 
 ## 项目功能
-+ [x] 双`Token`登录，基于令牌的鉴权
-
-+ [x] 使用`logrus`日志文件的自动切割和轮换
-
-+ [x] 使用`viper`多种配置格式和环境变量
-
-+ [x] 使用`translate`翻译错误
-
-+ [x] 自动生成`Swagger`文档
-
-+ [x] 使用`GORM`操作`MySQL`
-
-+ [x] 暴露`Metric`可以直接使用`prometheus`进行监控
-
-+ [x] 前端使用：`vite + react + chakra-ui`
+-  **双 Token 登录**：实现了基于令牌的鉴权机制。
+-  **日志管理**：引入了 `logrus` 进行日志文件的自动切割和轮换。
+-  **配置管理**：使用 `viper` 支持多种配置格式及环境变量的集成。
+-  **错误处理**：通过 `translate` 实现错误信息的翻译。
+-  **文档生成**：自动生成 `Swagger` API 文档。
+-  **数据库操作**：采用 `GORM` 操作 `MySQL` 数据库。
+-  **性能监控**：暴露 `Metric` 指标，允许使用 `Prometheus` 进行系统监控。
+-  **前端技术栈**：前端采用 `vite + react + chakra-ui` 组合。
 
 ## 双 Token 流程
 ![Snipaste_2024-07-17_14-20-42](https://github.com/user-attachments/assets/8cea318f-2302-4f19-b5a1-301714d1a00e)
