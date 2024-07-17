@@ -1,0 +1,61 @@
+services:
+  gin_blog:
+    image: smcroot/gin-blog:tagname
+    container_name: gin_blog
+    ports:
+      - "5678:5678"
+    volumes:
+      - gin_blog_logs:/logs
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8.0.36
+    container_name: mysql_server
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123456
+      MYSQL_DATABASE: demo
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123456
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    networks:
+      - backend
+
+  redis:
+    image: redis:6.2.6
+    container_name: redis_server
+    command: redis-server --appendonly yes --requirepass sumingcheng
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    networks:
+      - backend
+
+
+volumes:
+  mysql:
+  redis:
+
+networks:
+  backend:
+    driver: bridge
