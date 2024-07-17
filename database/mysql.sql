@@ -4,12 +4,6 @@ create user 'blog' identified by '123456';
 
 grant all on blog.* to 'blog' @'localhost' identified by 'blog';
 
-create database blog;
-
-create user 'blog' identified by '123456';
-
-grant all on blog.* to 'blog' @'localhost' identified by 'blog';
-
 create table if not exists user
 (
     id       int auto_increment comment '用户id,主键,自增',
