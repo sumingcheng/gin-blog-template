@@ -1,12 +1,14 @@
 import axios from 'axios';
 
+const isDEV = import.meta.env.VITE_APP_ENV === 'development'
+
 // 获取当前环境
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:5678',
+  baseURL: isDEV ? 'http://localhost:5678' : "",
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: import.meta.env.VITE_APP_ENV === 'development'  // 允许携带跨域cookies
+  withCredentials: isDEV  // 允许携带跨域cookies
 });
 
 // 请求拦截器
