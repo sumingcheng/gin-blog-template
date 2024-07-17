@@ -105,3 +105,28 @@ func GetAuthToken(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, TokenResponse{Code: 0, Msg: "success", Token: authToken})
 	}
 }
+
+func Logout(ctx *gin.Context) {
+	refreshToken, err := ctx.Cookie("refresh_token")
+	if err != nil {
+		util.LogRus.Warnf("未找到 Refresh Token: %s", err)
+		ctx.JSON(http.StatusBadRequest, TokenResponse{Code: 1, Msg: "未找到 Refresh Token"})
+		return
+	}
+
+	err = database.RmToken(refreshToken)
+	if err != nil {
+		return
+	}
+
+	ctx.SetCookie(
+		"refresh_token",
+		"",
+		-1,    // 将 maxAge 设置为 -1，这通常用于删除 Cookie
+		"/",   // path 必须与设置 Cookie 时相同
+		"",    // domain 必须与设置 Cookie 时相同，如果有指定的话
+		false, // secure 应与设置 Cookie 时相同
+		true,  // httpOnly 应与设置 Cookie 时相同
+	)
+	ctx.JSON(http.StatusOK, TokenResponse{Code: 0, Msg: "已注销"})
+}

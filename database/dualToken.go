@@ -31,6 +31,16 @@ func GetToken(refreshToken string) (authToken string) {
 	return authToken
 }
 
+func RmToken(refreshToken string) error {
+	client := GetRedisClient()
+	_, err := client.Del(context.Background(), TokenPrefix+refreshToken).Result()
+	if err != nil {
+		util.LogRus.Errorf("Failed to delete refresh token %s: %s", refreshToken, err)
+		return err
+	}
+	return nil
+}
+
 func VerifyRefreshToken(refreshToken string) (authToken string, valid bool) {
 	client := GetRedisClient()
 	authToken, err := client.Get(context.Background(), TokenPrefix+refreshToken).Result()

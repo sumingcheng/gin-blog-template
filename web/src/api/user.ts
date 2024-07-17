@@ -19,3 +19,11 @@ export const getAuthToken = async () => {
   return res.data
 };
 
+// 退出登录
+export const logout = async () => {
+  const res = await axiosClient({
+    url: '/api/logout',
+    method: 'get',
+  })
+  return res.data
+};
