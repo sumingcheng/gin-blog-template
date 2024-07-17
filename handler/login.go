@@ -91,7 +91,7 @@ func Login(ctx *gin.Context) {
 func GetAuthToken(ctx *gin.Context) {
 	refreshToken, err := ctx.Cookie("refresh_token")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, TokenResponse{Code: 1, Msg: "未找到 Refresh Token"})
+		ctx.JSON(http.StatusOK, TokenResponse{Code: 1, Msg: "登录已过期，请重新登录"})
 		util.LogRus.Warnf("未找到 Refresh Token: %s", err)
 		return
 	}

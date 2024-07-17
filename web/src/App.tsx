@@ -12,8 +12,10 @@ function App() {
     getAuthToken().then(res => {
       if (res.code === 0) {
         sessionStorage.setItem('auth_token', res.auth_token)
+      } else if (res.code === 1) {
+        // showWarningToast(res.msg)
       } else {
-        showWarningToast(res.message)
+        // showWarningToast('未知错误')
       }
     })
   }, [showWarningToast])
