@@ -55,6 +55,7 @@ services:
 volumes:
   mysql:
   redis:
+  gin_blog_logs:
 
 networks:
   backend:
