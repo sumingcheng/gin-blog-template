@@ -4,14 +4,8 @@
   <a href="https://raw.githubusercontent.com/sumingcheng/gin-blog/main/LICENSE">
     <img src="https://img.shields.io/github/license/sumingcheng/gin-blog?color=brightgreen" alt="license">
   </a>
-  <a href="https://github.com/sumingcheng/gin-blog/releases/latest">
-    <img src="https://img.shields.io/github/v/release/sumingcheng/gin-blog?color=brightgreen&include_prereleases" alt="release">
-  </a>
-  <a href="https://hub.docker.com/repository/docker/justsong/gin-blog">
-    <img src="https://img.shields.io/docker/pulls/justsong/gin-blog?color=brightgreen" alt="docker pull">
-  </a>
-  <a href="https://github.com/sumingcheng/gin-blog/releases/latest">
-    <img src="https://img.shields.io/github/downloads/sumingcheng/gin-blog/total?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://hub.docker.com/repository/docker/smcroot/gin-blog">
+    <img src="https://img.shields.io/docker/pulls/smcroot/gin-blog?color=brightgreen" alt="docker pull">
   </a>
   <a href="https://goreportcard.com/report/github.com/sumingcheng/gin-blog">
     <img src="https://goreportcard.com/badge/github.com/sumingcheng/gin-blog" alt="GoReportCard">
@@ -38,7 +32,7 @@
   
 
 ## 部署
-### 基于 Docker 进行部署
+### 手动部署
 进入项目目录
 
 ```
@@ -46,46 +40,52 @@ make build
 make run
 ```
 
-数据将会保存在宿主机的 `/home/ubuntu/data/gin-blog` 目录。
+日志数据将会保存在宿主机的 `/home/logs` 目录，也可以自行修改。
 
-### 手动部署
-1. 从 [GitHub Releases](https://github.com/sumingcheng/gin-blog/releases/latest) 下载可执行文件或者从源码编译：
-   ```shell
-   git clone https://github.com/sumingcheng/gin-blog.git
-   cd gin-blog/web
-   npm install
-   npm run build
-   cd ..
-   go mod download
-   go build -ldflags "-s -w" -o gin-blog
-   ````
-2. 运行：
-   ```shell
-   chmod u+x gin-blog
-   ./gin-blog --port 3000 --log-dir ./logs
-   ```
-3. 访问 [http://localhost:3000/](http://localhost:3000/) 并登录。初始账号用户名为 `root`，密码为 `123456`。
+### 基于 Docker 进行部署
 
-更加详细的部署教程[参见此处](https://iamazing.cn/page/how-to-deploy-a-website)。
+`git clone https://github.com/sumingcheng/gin-blog.git`进入项目目录
+
+```
+docker-compose up -d
+```
+
+**执行SQL**
+
+```
+create table if not exists user
+(
+    id       int auto_increment comment '用户id,主键,自增',
+    name     varchar(20) not null comment '用户名',
+    password char(32)    not null comment '密码md5',
+    primary key (id),
+    unique key idx_username (name)
+) default charset = utf8mb4 comment '用户登录表';
+
+insert into user (name, password)
+values ('admin', 'e10adc3949ba59abbe56e057f20f883e'),
+       ('user', 'e10adc3949ba59abbe56e057f20f883e');
+
+create table if not exists blog
+(
+    id          int auto_increment comment '博客id,主键,自增',
+    user_id     int          not null comment '作者id',
+    title       varchar(100) not null comment '标题',
+    article     text         not null comment '文章内容',
+    create_time timestamp default current_timestamp comment '创建时间',
+    update_time timestamp default current_timestamp on update current_timestamp comment '最后修改时间',
+    primary key (id),
+    key idx_user_id (user_id)
+) default charset = utf8mb4 comment '博客表';
+
+insert into blog (user_id, title, article)
+values (1, '博客标题1', '博客内容1'),
+       (1, '博客标题2', '博客内容2'),
+       (2, '博客标题3', '博客内容3'),
+       (2, '博客标题4', '博客内容4'),
+       (2, '博客标题5', '博客内容5');
+```
 
 ## 配置
-系统本身开箱即用。
-
-你可以通过设置环境变量或者命令行参数进行配置。
-
-等到系统启动后，使用 `root` 用户登录系统并做进一步的配置。
 
 ### 环境变量
-1. `REDIS_CONN_STRING`：设置之后将使用 Redis 作为请求频率限制的存储，而非使用内存存储。
-   + 例子：`REDIS_CONN_STRING=redis://default:redispw@localhost:49153`
-2. `SESSION_SECRET`：设置之后将使用固定的会话密钥，这样系统重新启动后已登录用户的 cookie 将依旧有效。
-   + 例子：`SESSION_SECRET=random_string`
-3. `SQL_DSN`：设置之后将使用指定数据库而非 SQLite。
-   + 例子：`SQL_DSN=root:123456@tcp(localhost:3306)/gin-blog`
-
-### 命令行参数
-1. `--port <port_number>`: 指定服务器监听的端口号，默认为 `3000`。
-   + 例子：`--port 3000`
-2. `--log-dir <log_dir>`: 指定日志文件夹，如果没有设置，日志将不会被保存。
-   + 例子：`--log-dir ./logs`
-3. `--version`: 打印系统版本号并退出。
