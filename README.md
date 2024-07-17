@@ -1,6 +1,6 @@
-# Gin-Blog 模板
 
 <p align="center">
+  <h1 align="center">Gin-Blog 模板</h1>
   <a href="https://raw.githubusercontent.com/sumingcheng/gin-blog/main/LICENSE">
     <img src="https://img.shields.io/github/license/sumingcheng/gin-blog?color=brightgreen" alt="license">
   </a>
@@ -11,8 +11,8 @@
     <img src="https://goreportcard.com/badge/github.com/sumingcheng/gin-blog" alt="GoReportCard">
   </a>
 </p>
-## 功能
 
+## 项目功能
 + [x] 双`Token`登录，基于令牌的鉴权
 
 + [x] 使用`logrus`日志文件的自动切割和轮换
@@ -29,7 +29,9 @@
 
 + [x] 前端使用：`vite + react + chakra-ui`
 
-  
+## 双 Token 流程
+![Snipaste_2024-07-17_14-20-42](https://github.com/user-attachments/assets/8cea318f-2302-4f19-b5a1-301714d1a00e)
+
 
 ## 部署
 ### 手动部署
