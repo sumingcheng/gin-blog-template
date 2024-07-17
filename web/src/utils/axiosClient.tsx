@@ -6,7 +6,7 @@ const axiosClient = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: true || import.meta.env.VITE_APP_ENV === 'development'  // 允许携带跨域cookies
+  withCredentials: import.meta.env.VITE_APP_ENV === 'development'  // 允许携带跨域cookies
 });
 
 // 请求拦截器
