@@ -1,4 +1,4 @@
-<h1 align="center">Gin-Blog 模板</h1>
+<h1 align="center">Gin-Blog-Template</h1>
 <p align="center">
   <a href="https://raw.githubusercontent.com/sumingcheng/gin-blog/main/LICENSE">
     <img src="https://img.shields.io/github/license/sumingcheng/gin-blog?color=brightgreen" alt="license">
