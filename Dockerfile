@@ -1,10 +1,11 @@
 FROM node:18.17-alpine AS build1
 WORKDIR /web
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+ARG NPM_REGISTRY=https://registry.npmjs.org/
 
 COPY ./web .
 RUN apk add --no-cache libc6-compat && \
-    npm config set registry https://registry.npmmirror.com/ && \
+    npm config set registry ${NPM_REGISTRY} && \
     npm install -g pnpm && \
     pnpm install --force && \
     pnpm run build
