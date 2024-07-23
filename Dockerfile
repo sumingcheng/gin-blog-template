@@ -22,7 +22,7 @@ ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download
 RUN go build -tags netgo -ldflags '-w -s -extldflags "-static"' -o gin-blog
 
-FROM alpine AS build3
+FROM alpine
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add --no-cache ca-certificates tzdata && \
     update-ca-certificates
