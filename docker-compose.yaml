@@ -1,6 +1,6 @@
 services:
   gin_blog:
-    image: ghcr.io/sumingcheng/gin-blog-template:v1.1.0
+    image: ghcr.io/sumingcheng/gin-blog-template:v1.1.1
     container_name: gin_blog
     ports:
       - "5678:5678"
