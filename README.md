@@ -88,9 +88,8 @@ values (1, '博客标题1', '博客内容1'),
 
 ![image](https://github.com/user-attachments/assets/a3b15eea-dcf7-4ced-88da-4126d29e6190)
 
-### 环境变量
 
-## 双 Token 流程
+## Token 流程
 ![Snipaste_2024-07-17_14-20-42](https://github.com/user-attachments/assets/8cea318f-2302-4f19-b5a1-301714d1a00e)
 
 ## Star History
