@@ -40,9 +40,16 @@ make run
 docker-compose up -d
 ```
 
+```
+启动成功访问 ——> 部署地址：5678
+```
+
+### 建表语句
 **执行SQL**
 
-```
+```sql
+create database blog;
+
 create table if not exists user
 (
     id       int auto_increment comment '用户id,主键,自增',
@@ -75,18 +82,8 @@ values (1, '博客标题1', '博客内容1'),
        (2, '博客标题4', '博客内容4'),
        (2, '博客标题5', '博客内容5');
 ```
+### 监控配置
 
-### 访问
-
-```
-启动成功访问 ——> 部署地址：5678
-```
-
-## 监控配置
-
-```bash
-docker-compose up -d
-```
 项目启动后，可以直接导入 `grafana` 仪表盘 `deploy/grafana/gin-blog.json` 
 
 ![image](https://github.com/user-attachments/assets/a3b15eea-dcf7-4ced-88da-4126d29e6190)
