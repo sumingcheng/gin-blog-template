@@ -10,7 +10,7 @@ services:
       - mysql
       - redis
     networks:
-      - backend
+      - gin-blog
 
   mysql:
     image: mysql:8.0.36
@@ -32,7 +32,7 @@ services:
       retries: 3
     restart: always
     networks:
-      - backend
+      - gin-blog
 
   redis:
     image: redis:6.2.6
@@ -49,14 +49,50 @@ services:
       retries: 3
     restart: always
     networks:
-      - backend
+      - gin-blog
 
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "59090:9090"
+    networks:
+      - gin-blog
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - gin_blog
+
+  grafana:
+    image: grafana/grafana:10.4.4
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123456
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "53000:3000"
+    networks:
+      - gin-blog
+    restart: unless-stopped
+    depends_on:
+      - prometheus
 
 volumes:
   mysql:
   redis:
   gin_blog_logs:
+  prometheus_data:
+  grafana_data:
 
 networks:
-  backend:
+  gin-blog:
     driver: bridge

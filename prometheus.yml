@@ -1,0 +1,21 @@
+# 全局配置
+global:
+  scrape_interval: 15s  # 设置抓取（监控）间隔为每15秒。默认是每分钟一次。
+  evaluation_interval: 15s  # 设置规则评估间隔为每15秒。默认也是每分钟一次。
+
+# 警报管理器配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093  # 如果需要，取消注释并修改为您的 Alertmanager 地址
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'prometheus:9090' ] # 使用 Docker Compose 服务名和内部端口
+
+  - job_name: "gin_blog"
+    static_configs:
+      - targets: [ 'gin_blog:5678' ]
+    metrics_path: "/metrics"  # 指定抓取指标数据的路径
