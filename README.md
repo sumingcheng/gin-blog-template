@@ -21,10 +21,6 @@
 -  **性能监控**：暴露 `Metric` 指标，允许使用 `Prometheus` 进行系统监控。
 -  **前端技术栈**：前端采用 `vite + react + chakra-ui` 组合。
 
-## 双 Token 流程
-![Snipaste_2024-07-17_14-20-42](https://github.com/user-attachments/assets/8cea318f-2302-4f19-b5a1-301714d1a00e)
-
-
 ## 部署
 ### 手动部署
 进入项目目录
@@ -97,6 +93,10 @@ docker-compose up -d
 
 ### 环境变量
 
+## 双 Token 流程
+![Snipaste_2024-07-17_14-20-42](https://github.com/user-attachments/assets/8cea318f-2302-4f19-b5a1-301714d1a00e)
+
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=sumingcheng/gin-blog-template&type=Timeline)](https://star-history.com/#sumingcheng/gin-blog-template&Timeline)
+
