@@ -83,7 +83,7 @@ values (1, '博客标题1', '博客内容1'),
 ### 访问
 
 ```
-启动成功访问 ——> 你的IP地址：5678
+启动成功访问 ——> 部署地址：5678
 ```
 
 ## 监控配置
@@ -91,7 +91,7 @@ values (1, '博客标题1', '博客内容1'),
 ```bash
 docker-compose up -d
 ```
-项目启动后，可以直接导入 `deploy/grafana/gin-blog.json` 仪表盘
+项目启动后，可以直接导入 `grafana` 仪表盘 `deploy/grafana/gin-blog.json` 
 
 ![image](https://github.com/user-attachments/assets/a3b15eea-dcf7-4ced-88da-4126d29e6190)
 
