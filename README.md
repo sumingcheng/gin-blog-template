@@ -92,4 +92,11 @@ values (1, '博客标题1', '博客内容1'),
 docker-compose up -d
 ```
 项目启动后，可以直接导入 `deploy/grafana/gin-blog.json` 仪表盘
+
+![image](https://github.com/user-attachments/assets/a3b15eea-dcf7-4ced-88da-4126d29e6190)
+
 ### 环境变量
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=sumingcheng/gin-blog-template&type=Timeline)](https://star-history.com/#sumingcheng/gin-blog-template&Timeline)
