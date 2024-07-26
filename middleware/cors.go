@@ -1,19 +1,13 @@
 package middleware
 
 import (
+	"blog/util"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"time"
 )
 
-var AllowArr = []string{
-	"http://127.0.0.1:5173",
-	"http://127.0.0.1:3000",
-	"http://127.0.0.1:5678",
-	"http://localhost:5173",
-	"http://localhost:3000",
-	"http://localhost:5678",
-}
+var AllowArr = util.CreateConfig("gin").GetStringSlice("allowOrigins")
 
 func CORSMiddleware() gin.HandlerFunc {
 	return cors.New(cors.Config{

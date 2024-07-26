@@ -17,6 +17,7 @@ var (
 	buildFS embed.FS
 	//go:embed web/dist/index.html
 	indexPage []byte
+	ginConfig = util.CreateConfig("gin")
 )
 
 // 添加注释以描述 server 信息
@@ -37,16 +38,13 @@ func main() {
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出
 
 	server := gin.Default()
-
-	trustedProxies := []string{"0.0.0.0/0"}
-	err := server.SetTrustedProxies(trustedProxies)
-
+	err := server.SetTrustedProxies(ginConfig.GetStringSlice("trustedProxies"))
 	server.Use(middleware.CORSMiddleware())
 	server.Use(middleware.Metric())
-
+	// Router
 	router.SetRouter(server, buildFS, indexPage)
 
-	err = server.Run("0.0.0.0:5678")
+	err = server.Run("0.0.0.0:" + ginConfig.GetString("port"))
 	if err != nil {
 		return
 	}
