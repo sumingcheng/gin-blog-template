@@ -86,6 +86,10 @@ values (1, '博客标题1', '博客内容1'),
 启动成功访问 ——> 你的IP地址：5678
 ```
 
-## 配置
+## 监控配置
 
+```bash
+docker-compose up -d
+```
+项目启动后，可以直接导入 `deploy/grafana/gin-blog.json` 仪表盘
 ### 环境变量
