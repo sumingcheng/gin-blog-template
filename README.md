@@ -18,8 +18,8 @@
 -  **错误处理**：通过 `translate` 实现错误信息的翻译。
 -  **文档生成**：自动生成 `Swagger` API 文档。
 -  **数据库操作**：采用 `GORM` 操作 `MySQL` 数据库。
--  **性能监控**：暴露 `Metric` 指标，允许使用 `Prometheus` 进行系统监控。
--  **前端技术栈**：前端采用 `vite + react + chakra-ui` 组合。
+-  **性能监控**：暴露 `Metric` 指标，使用 `Prometheus + Grafana` 监控。
+-  **前端技术栈**：前端采用 `vite + react + chakra-ui` 。
 
 ## 部署
 ### 手动部署
