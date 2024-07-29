@@ -29,7 +29,7 @@ func TestForEach(t *testing.T) {
 }
 
 func TestMap(t *testing.T) {
-	newArray := util.Map(arrayTest, func(p Person, i int, people []Person) Person {
+	newArray := util.Map(arrayTest, func(p Person, index int, people []Person) Person {
 		return Person{
 			Name:  p.Name,
 			Age:   p.Age,
@@ -41,4 +41,60 @@ func TestMap(t *testing.T) {
 	for _, p := range newArray {
 		fmt.Printf("%s: %d\n", p.Name, p.Score)
 	}
+}
+
+func TestFilter(t *testing.T) {
+	filter := util.Filter(arrayTest, func(person Person, index int, people []Person) bool {
+		return person.Score > 60
+	})
+
+	for i := 0; i < len(filter); i++ {
+		fmt.Printf("%+v", filter[i])
+	}
+}
+
+func TestReduce(t *testing.T) {
+	totalScore := util.Reduce(arrayTest, 0, func(acc int, person Person) int {
+		return acc + person.Score
+	})
+
+	fmt.Println("总成绩为：", totalScore)
+}
+
+func TestEvery(t *testing.T) {
+	allPositive := util.Every(arrayTest, func(person Person, i int, people []Person) bool {
+		return person.Score > 60
+	})
+
+	fmt.Println("allPositive:", allPositive)
+}
+
+func TestSome(t *testing.T) {
+	some := util.Some(arrayTest, func(person Person, i int, people []Person) bool {
+		return person.Score > 60
+	})
+
+	fmt.Println("some:", some)
+}
+
+func TestPush(t *testing.T) {
+	newArr, _ := util.Push(arrayTest, Person{
+		Name: "素明诚", Age: 28, Score: 90,
+	})
+
+	fmt.Printf("%+v", newArr)
+}
+
+func TestUnshift(t *testing.T) {
+	newArr, _ := util.Unshift(arrayTest, Person{
+		Name: "素明诚", Age: 28, Score: 90,
+	})
+
+	fmt.Printf("%+v", newArr)
+}
+
+func TestPop(t *testing.T) {
+	_, arrs, _ := util.Pop(arrayTest)
+
+	fmt.Printf("%+v", arrs)
 }
