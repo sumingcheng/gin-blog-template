@@ -17,7 +17,6 @@ func CORSMiddleware() gin.HandlerFunc {
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Auth_token", "Authorization", "Refresh_token"}, // 允许的请求头
 		ExposeHeaders:    []string{"Content-Length"},                                                                   // 允许暴露给浏览器的响应头
 		AllowCredentials: true,                                                                                         // 允许凭证
-		MaxAge:           12 * time.Hour,                                                                               // 预检请求的缓存时间
 		AllowOriginFunc: func(origin string) bool {
 			match, _ := regexp.MatchString(`^http://(localhost|127\.0\.0\.1)`, origin)
 			if match {
@@ -30,5 +29,6 @@ func CORSMiddleware() gin.HandlerFunc {
 			}
 			return false
 		},
+		MaxAge: 12 * time.Hour, // 预检请求的缓存时间
 	})
 }
