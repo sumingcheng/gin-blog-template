@@ -4,6 +4,7 @@ import (
 	"blog/util"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"regexp"
 	"time"
 )
 
@@ -17,5 +18,17 @@ func CORSMiddleware() gin.HandlerFunc {
 		ExposeHeaders:    []string{"Content-Length"},                                                                   // 允许暴露给浏览器的响应头
 		AllowCredentials: true,                                                                                         // 允许凭证
 		MaxAge:           12 * time.Hour,                                                                               // 预检请求的缓存时间
+		AllowOriginFunc: func(origin string) bool {
+			match, _ := regexp.MatchString(`^http://(localhost|127\.0\.0\.1)`, origin)
+			if match {
+				return true
+			}
+			for _, v := range AllowArr {
+				if v == origin {
+					return true
+				}
+			}
+			return false
+		},
 	})
 }
