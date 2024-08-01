@@ -17,7 +17,6 @@ import (
 var (
 	blogMysql     *gorm.DB
 	blogMysqlOnce sync.Once
-	dbLog         ormlog.Interface
 
 	blogRedis     *redis.Client
 	blogRedisOnce sync.Once

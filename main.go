@@ -11,6 +11,7 @@ import (
 
 func init() {
 	util.InitLog("log")
+	database.AutoMigrate()
 }
 
 var (
@@ -50,6 +51,4 @@ func main() {
 	if err != nil {
 		return
 	}
-
-	database.AutoMigrate()
 }
