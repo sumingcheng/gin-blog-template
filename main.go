@@ -47,8 +47,9 @@ func main() {
 
 	err = server.Run(ginConfig.GetString("port"))
 
-	database.AutoMigrate()
 	if err != nil {
 		return
 	}
+
+	database.AutoMigrate()
 }

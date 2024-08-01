@@ -9,16 +9,18 @@ func AutoMigrate() {
 	db := GetBlogDBConnection()
 	err := db.AutoMigrate(&Blog{}, &User{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("无法连接到数据库: %v", err)
 	}
 
 	if err := createInitialUsers(db); err != nil {
-		log.Fatalf("Failed to create initial users: %v", err)
+		log.Fatalf("创建初始用户失败: %v", err)
 	}
 
 	if err := createInitialBlogs(db); err != nil {
-		log.Fatalf("Failed to create initial blogs: %v", err)
+		log.Fatalf("创建初始博客失败: %v", err)
 	}
+
+	log.Println("MySQL 初始化成功")
 }
 
 func createInitialUsers(db *gorm.DB) error {
