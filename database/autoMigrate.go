@@ -3,9 +3,11 @@ package database
 import (
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 func AutoMigrate() {
+	time.Sleep(2 * time.Second)
 	db := GetBlogDBConnection()
 	err := db.AutoMigrate(&Blog{}, &User{})
 	if err != nil {
