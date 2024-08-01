@@ -9,11 +9,11 @@ import (
 )
 
 type Blog struct {
-	Id         int       `gorm:"column:id;primaryKey" json:"id"`
-	UserId     int       `gorm:"column:user_id" json:"userId"`
-	Title      string    `gorm:"column:title" json:"title"`
-	Article    string    `gorm:"column:article" json:"article"`
-	UpdateTime time.Time `gorm:"column:update_time" json:"updateTime"`
+	Id         int       `gorm:"column:id;primaryKey;comment:'博客ID，主键，自增'"`
+	UserId     int       `gorm:"column:user_id;comment:'作者ID'"`
+	Title      string    `gorm:"column:title;comment:'标题'"`
+	Article    string    `gorm:"column:article;comment:'文章内容'"`
+	UpdateTime time.Time `gorm:"column:update_time;comment:'最后修改时间'"`
 }
 
 func (Blog) TableName() string {

@@ -10,10 +10,10 @@ func SetRouter(
 	buildFS embed.FS,
 	indexPage []byte,
 ) {
-	// Other
-	SetOtherRouter(router)
 	// API
 	SetApiRouter(router)
+	// Other
+	SetOtherRouter(router)
 	// Web
 	SetWebRouter(router, buildFS, indexPage)
 }

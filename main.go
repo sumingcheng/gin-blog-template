@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blog/database"
 	"blog/middleware"
 	"blog/router"
 	"blog/util"
@@ -36,6 +37,7 @@ var (
 func main() {
 	//gin.SetMode(gin.ReleaseMode) // 设置为发布模式
 	//gin.Defaultwriter = io.Discard // 关闭gin的日志输出,所有的日志都会被丢弃
+	database.AutoMigrate()
 
 	server := gin.Default()
 	err := server.SetTrustedProxies(ginConfig.GetStringSlice("trustedProxies"))
@@ -44,7 +46,7 @@ func main() {
 	// Router
 	router.SetRouter(server, buildFS, indexPage)
 
-	err = server.Run("0.0.0.0:" + ginConfig.GetString("port"))
+	err = server.Run(ginConfig.GetString("port"))
 	if err != nil {
 		return
 	}

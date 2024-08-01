@@ -7,9 +7,9 @@ import (
 )
 
 type User struct {
-	Id     int    `gorm:"column:id;primaryKey" json:"id"`
-	Name   string `gorm:"column:name" json:"name"`
-	PassWd string `gorm:"column:password" json:"passWd"`
+	Id     int    `gorm:"column:id;primaryKey;autoIncrement;comment:'用户ID，主键，自增'"`
+	Name   string `gorm:"column:name;size:20;not null;unique;comment:'用户名'"`
+	PassWd string `gorm:"column:password;size:32;not null;comment:'密码MD5'"`
 }
 
 func (User) TableName() string {
