@@ -23,9 +23,8 @@ const LoginPage: FC = () => {
       return;
     }
     const res = await login({ user: username, pass: encryptPassword(password) });
-    console.log(res)
     if (res.code !== 0) {
-      showWarningToast(res.message);
+      showWarningToast(res.msg);
       return;
     }
 
