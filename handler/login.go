@@ -36,19 +36,19 @@ func Login(ctx *gin.Context) {
 	// 未登录，登录流程
 	var req LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, LoginResponse{Code: 1, Msg: util.TranslateErrors(err)})
+		ctx.JSON(http.StatusOK, LoginResponse{Code: 1, Msg: util.TranslateErrors(err)})
 		return
 	}
 
 	// 用户名密码校验
 	user := database.GetUserByName(req.User)
 	if user == nil {
-		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 1, Msg: "用户不存在"})
+		ctx.JSON(http.StatusOK, LoginResponse{Code: 1, Msg: "用户不存在"})
 		return
 	}
 
 	if user.PassWd != req.Pass {
-		ctx.JSON(http.StatusForbidden, LoginResponse{Code: 1, Msg: "密码不正确"})
+		ctx.JSON(http.StatusOK, LoginResponse{Code: 1, Msg: "密码不正确"})
 		return
 	}
 
