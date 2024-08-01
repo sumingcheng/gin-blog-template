@@ -1,4 +1,4 @@
-IMAGE_NAME := gin-blog:v1.0.1
+IMAGE_NAME := gin-blog:v1.2.0
 CONTAINER_NAME := gin-blog
 INTERNAL_PORT := 5678
 EXTERNAL_PORT ?= 5678
