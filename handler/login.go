@@ -4,6 +4,7 @@ import (
 	"blog/database"
 	"blog/middleware"
 	"blog/util"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -40,8 +41,10 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Printf("req: %v\n", req)
 	// 用户名密码校验
 	user := database.GetUserByName(req.User)
+	fmt.Println("user:", user)
 	if user == nil {
 		ctx.JSON(http.StatusOK, LoginResponse{Code: 1, Msg: "用户不存在"})
 		return

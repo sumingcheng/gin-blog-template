@@ -8,12 +8,12 @@ import (
 )
 
 type Blog struct {
-	Id       int    `gorm:"column:id;primaryKey;comment:'ID，主键，自增'"`
-	UserId   int    `gorm:"column:user_id;comment:'作者ID'"`
-	Title    string `gorm:"column:title;comment:'标题'"`
-	Article  string `gorm:"column:article;comment:'文章内容'"`
-	UpdateAt int64  `gorm:"column:update_at;comment:'最后修改时间 UTC'"`
-	DeleteAt int64  `gorm:"column:delete_at;comment:'删除时间 UTC'"`
+	Id       int    `gorm:"column:id;primaryKey" json:"id"`
+	UserId   int    `gorm:"column:user_id" json:"userId"`
+	Title    string `gorm:"column:title" json:"title"`
+	Article  string `gorm:"column:article" json:"article"`
+	UpdateAt int64  `gorm:"column:update_at" json:"updateAt"`
+	DeleteAt int64  `gorm:"column:delete_at" json:"deleteAt"`
 }
 
 func (Blog) TableName() string {

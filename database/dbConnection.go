@@ -49,7 +49,7 @@ func createMysqlDB(
 				log.New(os.Stdout, "\r\n", log.LstdFlags),
 				ormlog.Config{
 					SlowThreshold: 100 * time.Millisecond, // 设置 SQL 阈值
-					LogLevel:      ormlog.Silent,          // Silent表示不输出日志
+					LogLevel:      ormlog.Info,            // Silent表示不输出日志
 					Colorful:      true,                   // 彩色日志打印
 				},
 			),
