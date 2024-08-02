@@ -16,19 +16,17 @@
 -  **前端技术栈**：`vite + react + chakra-ui` 。
 
 ## 部署
-### 手动构建
+
+`git clone https://github.com/sumingcheng/gin-blog.git`进入项目目录
+
+### 手动构建镜像
 进入项目目录
 
 ```
 make build
-make run
 ```
 
-日志数据将会保存在宿主机的 `/home/logs` 目录，也可以自行修改。
-
-### 基于 Docker 进行部署
-
-`git clone https://github.com/sumingcheng/gin-blog.git`进入项目目录
+### Docker-compose 启动
 
 ```
 docker-compose up -d
@@ -38,7 +36,7 @@ docker-compose up -d
 启动成功访问 ——> 部署地址：5678
 ```
 
-启动后立刻请求，可能会有`500`的错误，请等待`MySQL`完全启动后再试
+**注意：启动后立刻请求，可能会有`500`的错误，请等待`MySQL`完全启动后再试**
 
 ### 监控配置
 
