@@ -3,9 +3,10 @@ package middleware
 import (
 	"blog/database"
 	"blog/util"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (
