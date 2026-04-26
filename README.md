@@ -15,6 +15,8 @@ Clean architecture, dual-token auth, one-command deploy.
   <a href="./README_CN.md">中文文档</a>
 </p>
 
+<img width="3016" height="1644" alt="image" src="https://github.com/user-attachments/assets/435c1231-d30e-4919-95a1-d3ba029ae56b" />
+
 ---
 
 ## Tech Stack
