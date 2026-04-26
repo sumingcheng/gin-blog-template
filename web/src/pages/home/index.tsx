@@ -57,9 +57,9 @@ const HomePage: FC = () => {
 
   useEffect(() => { fetchBlogs(); }, [fetchBlogs]);
 
-  // Cmd+K / Ctrl+K 唤起搜索
+  // Cmd+K / Ctrl+K 或 Header 按钮唤起搜索
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setSearchOpen(true);
@@ -69,8 +69,16 @@ const HomePage: FC = () => {
         setSearchOpen(false);
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    const onCustom = () => {
+      setSearchOpen(true);
+      setSearchInput(keyword);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('open-search', onCustom);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('open-search', onCustom);
+    };
   }, [searchOpen, keyword]);
 
   useEffect(() => {
@@ -171,26 +179,13 @@ const HomePage: FC = () => {
         </Box>
       )}
 
-      <Box maxW="680px" mx="auto" px={5} pt="60px" pb="120px">
-        {/* 顶部提示 */}
-        <Flex justify="flex-end" mb="36px">
-          {keyword ? (
-            <Flex align="center" gap={3}>
-              <Text fontSize="13px" color="#999">搜索：{keyword}</Text>
-              <Text fontSize="13px" color="#999" cursor="pointer" _hover={{ color: '#111' }} onClick={clearSearch}>清除</Text>
-            </Flex>
-          ) : (
-            <Text
-              fontSize="13px"
-              color="#ccc"
-              cursor="pointer"
-              onClick={() => setSearchOpen(true)}
-              _hover={{ color: '#999' }}
-            >
-              ⌘K 搜索
-            </Text>
-          )}
-        </Flex>
+      <Box maxW="680px" mx="auto" px={5} pt="48px" pb="120px">
+        {keyword && (
+          <Flex justify="flex-start" mb="24px" align="center" gap={3}>
+            <Text fontSize="13px" color="#999">搜索：{keyword}</Text>
+            <Text fontSize="13px" color="#999" cursor="pointer" _hover={{ color: '#111' }} onClick={clearSearch}>清除</Text>
+          </Flex>
+        )}
 
         {/* 列表 */}
         {loading ? (
@@ -214,15 +209,44 @@ const HomePage: FC = () => {
                 key={blog.id}
                 py="20px"
                 borderBottom={idx < blogs.length - 1 ? '1px solid #eee' : 'none'}
+                position="relative"
+                pl="16px"
+                ml="-16px"
+                cursor="pointer"
+                role="group"
+                onClick={() => navigate(`/blog/${blog.id}`)}
+                sx={{
+                  transition: 'padding-left 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    top: '24px',
+                    bottom: '24px',
+                    width: '2px',
+                    bg: '#111',
+                    borderRadius: '1px',
+                    transform: 'scaleY(0)',
+                    transition: 'transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                    transformOrigin: 'center',
+                  },
+                  '&:hover': {
+                    pl: '24px',
+                  },
+                  '&:hover::before': {
+                    transform: 'scaleY(1)',
+                  },
+                }}
               >
                 <Flex justify="space-between" align="flex-start">
-                  <Box flex={1} cursor="pointer" onClick={() => navigate(`/blog/${blog.id}`)}>
+                  <Box flex={1}>
                     <Text
                       fontSize="16px"
                       fontWeight={600}
                       lineHeight="1.5"
                       mb="6px"
-                      _hover={{ textDecoration: 'underline' }}
+                      transition="letter-spacing 0.25s ease"
+                      _groupHover={{ letterSpacing: '0.2px' }}
                     >
                       {blog.title}
                     </Text>
@@ -232,29 +256,50 @@ const HomePage: FC = () => {
                       lineHeight="1.6"
                       noOfLines={1}
                       mb="6px"
+                      transition="color 0.2s ease"
+                      _groupHover={{ color: '#999' }}
                     >
                       {blog.article}
                     </Text>
-                    <Text fontSize="12px" color="#999">{formatDate(blog.createdAt)}</Text>
-                  </Box>
-
-                  {isLoggedIn && currentUid === blog.userId && (
-                    <Flex gap={3} ml={6} pt="2px" flexShrink={0}>
+                    <Flex align="center" gap="6px">
+                      <Text fontSize="12px" color="#999">{formatDate(blog.createdAt)}</Text>
                       <Text
                         fontSize="12px"
                         color="#ccc"
+                        opacity={0}
+                        transition="opacity 0.2s ease"
+                        _groupHover={{ opacity: 1 }}
+                      >
+                        →
+                      </Text>
+                    </Flex>
+                  </Box>
+
+                  {isLoggedIn && currentUid === blog.userId && (
+                    <Flex
+                      gap={3}
+                      ml={6}
+                      pt="2px"
+                      flexShrink={0}
+                      opacity={0}
+                      transition="opacity 0.2s ease"
+                      _groupHover={{ opacity: 1 }}
+                    >
+                      <Text
+                        fontSize="12px"
+                        color="#999"
                         cursor="pointer"
                         _hover={{ color: '#111' }}
-                        onClick={() => navigate(`/blog/edit/${blog.id}`)}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/blog/edit/${blog.id}`); }}
                       >
                         编辑
                       </Text>
                       <Text
                         fontSize="12px"
-                        color="#ccc"
+                        color="#999"
                         cursor="pointer"
                         _hover={{ color: '#dc2626' }}
-                        onClick={() => handleDelete(blog.id)}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(blog.id); }}
                       >
                         删除
                       </Text>

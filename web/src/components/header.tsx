@@ -31,6 +31,10 @@ const Header: FC = () => {
     }
   };
 
+  const openSearch = () => {
+    window.dispatchEvent(new CustomEvent('open-search'));
+  };
+
   return (
     <Box
       as="header"
@@ -155,6 +159,17 @@ const Header: FC = () => {
               </Flex>
             </>
           )}
+          <Text
+            fontSize="13px"
+            color="#ccc"
+            cursor="pointer"
+            onClick={openSearch}
+            _hover={{ color: '#999' }}
+            userSelect="none"
+            ml={1}
+          >
+            ⌘K
+          </Text>
         </Flex>
       </Flex>
     </Box>
