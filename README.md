@@ -1,54 +1,150 @@
-<h1 align="center">Gin-Blog-Template</h1>
+<h1 align="center">Gin Blog Template</h1>
+
 <p align="center">
-  <a href="https://raw.githubusercontent.com/sumingcheng/gin-blog/main/LICENSE"><img src="https://img.shields.io/github/license/sumingcheng/gin-blog?color=brightgreen" alt="license"></a><a href="https://hub.docker.com/repository/docker/smcroot/gin-blog"><img src="https://img.shields.io/docker/pulls/smcroot/gin-blog?color=brightgreen" alt="docker pull"></a><a href="https://goreportcard.com/report/github.com/sumingcheng/gin-blog"><img src="https://goreportcard.com/badge/github.com/sumingcheng/gin-blog" alt="GoReportCard"></a>
+A production-ready blog template built with Go + React.<br>
+Clean architecture, dual-token auth, one-command deploy.
 </p>
 
+<p align="center">
+  <a href="https://raw.githubusercontent.com/sumingcheng/gin-blog/main/LICENSE"><img src="https://img.shields.io/github/license/sumingcheng/gin-blog?color=353535" alt="license"></a>
+  <a href="https://hub.docker.com/repository/docker/smcroot/gin-blog"><img src="https://img.shields.io/docker/pulls/smcroot/gin-blog?color=353535" alt="docker pull"></a>
+  <a href="https://goreportcard.com/report/github.com/sumingcheng/gin-blog"><img src="https://goreportcard.com/badge/github.com/sumingcheng/gin-blog" alt="Go Report Card"></a>
+</p>
 
+<p align="center">
+  <a href="./README_CN.md">中文文档</a>
+</p>
 
-## 项目功能
--  **双 Token 登录**：实现了基于令牌的鉴权机制。
--  **日志管理**：引入了 `logrus` 进行日志文件的自动切割和轮换。
--  **配置管理**：使用 `viper` 配置格式及环境变量的集成。
--  **错误处理**： `translate` 实现错误信息的翻译。
--  **文档生成**：`Swagger` API 文档。
--  **数据库操作**： `GORM` 操作 `MySQL` 数据库。
--  **性能监控**：暴露 `Metric` 指标，使用 `Prometheus + Grafana` 监控。
--  **前端技术栈**：`vite + react + chakra-ui` 。
+---
 
-## 部署
+## Tech Stack
 
-`git clone https://github.com/sumingcheng/gin-blog.git`进入项目目录
+| Layer | Technology |
+|---|---|
+| Backend | Go 1.25, Gin, GORM, PostgreSQL 16, Redis |
+| Frontend | React 18, Vite, Chakra UI |
+| Auth | JWT (golang-jwt/v5) + Refresh Token, bcrypt |
+| Observability | Prometheus, Grafana, Logrus |
+| Deploy | Docker, Docker Compose, multi-stage build |
 
-### 手动构建镜像
-进入项目目录
+## Project Structure
 
 ```
+.
+├── config/          # YAML configs (postgres, redis, jwt secret)
+├── database/        # GORM models, DB/Redis connection, init.sql
+├── handler/         # HTTP handlers (thin layer, delegates to service)
+├── middleware/       # Auth, CORS, rate limit, request logger, metrics
+├── model/           # Response structs, error codes, pagination
+├── router/          # Route definitions
+├── service/         # Business logic
+├── util/            # JWT, bcrypt, config loader, logger, validator
+├── web/             # React frontend (Vite)
+├── deploy/          # Prometheus & Grafana configs
+├── Dockerfile       # Multi-stage build
+├── docker-compose.yaml
+└── main.go
+```
+
+## API
+
+### Public
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/register` | Register |
+| POST | `/api/login` | Login (returns JWT + sets refresh token cookie) |
+| POST | `/api/logout` | Logout |
+| GET | `/api/token` | Refresh auth token |
+| GET | `/api/blog/list` | Blog list (pagination, search) |
+| GET | `/api/blog/:bid` | Blog detail |
+
+### Authenticated
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/user/profile` | Get profile |
+| POST | `/api/user/password` | Change password |
+| POST | `/api/blog/create` | Create blog |
+| POST | `/api/blog/update` | Update blog |
+| DELETE | `/api/blog/:bid` | Delete blog (soft delete) |
+
+### Other
+
+| Endpoint | Description |
+|---|---|
+| `/health` | Health check (DB + Redis) |
+| `/metrics` | Prometheus metrics |
+| `/swagger/*` | Swagger UI |
+
+## Quick Start
+
+### Prerequisites
+
+- Docker & Docker Compose
+
+### Run
+
+```bash
+git clone https://github.com/sumingcheng/gin-blog-template.git
+cd gin-blog-template
+
+# Build
 make build
+
+# Start all services
+docker compose up -d
 ```
 
-### Docker-compose 启动
+The app will be available at `http://localhost:5678`.
+
+Default account: `admin` / `123456`
+
+### Local Development
+
+```bash
+# Start PostgreSQL + Redis only
+docker compose -f docker-compose-dev.yaml up -d postgres redis
+
+# Update config/postgres.yaml and config/redis.yaml host to localhost
+
+# Start backend
+go run main.go
+
+# Start frontend (in another terminal)
+cd web && npm install && VITE_APP_ENV=development npm run dev
+```
+
+Frontend dev server runs at `http://localhost:5173`, proxying API requests to `:5678`.
+
+## Auth Flow
 
 ```
-docker-compose up -d
+Client                    Server                    Redis
+  |                         |                         |
+  |-- POST /login --------->|                         |
+  |                         |-- verify password       |
+  |                         |-- generate JWT          |
+  |                         |-- generate refresh token|
+  |                         |-- SET refresh:auth ---->|
+  |<-- JWT + cookie --------|                         |
+  |                         |                         |
+  |-- GET /api/* ---------->|                         |
+  |   (auth_token header)   |-- verify JWT            |
+  |<-- response ------------|                         |
+  |                         |                         |
+  |-- GET /token ---------->|                         |
+  |   (refresh cookie)      |-- GET refresh token --->|
+  |<-- new auth_token ------|<-- auth token ----------|
 ```
 
-```
-启动成功访问 ——> 部署地址：5678
-```
+## Monitoring
 
-**注意：启动后立刻请求，可能会有`500`的错误，请等待`MySQL`完全启动后再试**
+After startup, import the Grafana dashboard from `deploy/grafana/gin-blog.json`.
 
-### 监控配置
+- Prometheus: `http://localhost:59090`
+- Grafana: `http://localhost:53000` (admin / admin123456)
 
-项目启动后，可以直接导入 `grafana` 仪表盘 `deploy/grafana/gin-blog.json` 
+## License
 
-![image](https://github.com/user-attachments/assets/a3b15eea-dcf7-4ced-88da-4126d29e6190)
-
-
-## Token 流程
-![Snipaste_2024-07-17_14-20-42](https://github.com/user-attachments/assets/8cea318f-2302-4f19-b5a1-301714d1a00e)
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=sumingcheng/gin-blog-template&type=Timeline)](https://star-history.com/#sumingcheng/gin-blog-template&Timeline)
-
+[MIT](./LICENSE)

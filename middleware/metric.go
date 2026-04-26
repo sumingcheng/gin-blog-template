@@ -12,7 +12,6 @@ import (
 const SERVICE = "blog"
 
 var (
-	// Counter和Gauge指标定义
 	requestCounter = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "request_counter",
@@ -21,29 +20,29 @@ var (
 		[]string{"service", "interface"},
 	)
 
-	requestTimer = promauto.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "request_timer",
-			Help: "Time spent processing request",
+	// Histogram 记录延迟分布，支持分位数聚合
+	requestDuration = promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "request_duration_ms",
+			Help:    "Request duration in milliseconds",
+			Buckets: []float64{5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000},
 		},
 		[]string{"service", "interface"},
 	)
 )
 
-// Metric 中间件函数
 func Metric() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		begin := time.Now()
 		ctx.Next()
 		ifc := mappingUrl(ctx)
 		requestCounter.WithLabelValues(SERVICE, ifc).Inc()
-		requestTimer.WithLabelValues(SERVICE, ifc).Set(float64(time.Since(begin).Milliseconds()))
+		requestDuration.WithLabelValues(SERVICE, ifc).Observe(float64(time.Since(begin).Milliseconds()))
 	}
 }
 
 var restfulMapping = map[string]string{"uid": ":uid", "bid": ":bid"}
 
-// 映射URL到标准restful格式
 func mappingUrl(ctx *gin.Context) string {
 	url := ctx.Request.URL.Path
 	for _, p := range ctx.Params {

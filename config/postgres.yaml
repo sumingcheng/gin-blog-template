@@ -1,0 +1,5 @@
+host: "localhost"
+port: 5432
+user: "postgres"
+pass: "admin123456"
+dbname: "blog"

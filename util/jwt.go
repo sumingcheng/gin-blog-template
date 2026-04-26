@@ -1,81 +1,57 @@
 package util
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
-type JwtHeader struct {
-	Algo string `json:"alg"` // 使用的算法, 比如HMAC SHA256
-	Type string `json:"typ"` // Token的类型，这里是JWT
-}
-
-type JwtPayload struct {
-	ID          string            `json:"jti"` // Token的ID
-	Issue       string            `json:"iss"` // 发行者
-	Audience    string            `json:"aud"` // 接收方
-	Subject     string            `json:"sub"` // 主题
-	IssueAt     int64             `json:"iat"` // 发行时间
-	NotBefore   int64             `json:"nbf"` // 生效时间
-	Expiration  int64             `json:"exp"` // 过期时间
-	UserDefined map[string]string `json:"ud"`  // 用户自定义的数据
-}
-
-type CustomClaims struct {
-	UserID int `json:"UserID"`
+type AuthClaims struct {
+	UID int `json:"uid"`
 	jwt.RegisteredClaims
 }
 
-var (
-	DefaultHeader = JwtHeader{
-		Algo: "HS256",
-		Type: "JWT",
-	}
-	key = []byte("ssss")
-)
-
-func GetRefreshToken() (string, error) {
-	claims := CustomClaims{
+// GenAuthToken 生成 auth JWT，内置 exp
+func GenAuthToken(uid int, secret string, expire time.Duration) (string, error) {
+	claims := AuthClaims{
+		UID: uid,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "Blog_RefreshToken",
+			Issuer:    "blog",
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expire)),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(key)
+	return token.SignedString([]byte(secret))
 }
 
-func GenJWT(header JwtHeader, payload JwtPayload, secret string) (string, error) {
-	part1, err := MarshalAndEncode(header)
+// VerifyAuthToken 解析并校验 JWT（含 exp 自动校验），返回 uid
+func VerifyAuthToken(tokenStr, secret string) (int, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &AuthClaims{}, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("签名算法不匹配: %v", t.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
 	if err != nil {
-		return "", err
+		return 0, err
 	}
-	part2, err := MarshalAndEncode(payload)
-	if err != nil {
-		return "", err
+
+	claims, ok := token.Claims.(*AuthClaims)
+	if !ok || !token.Valid {
+		return 0, fmt.Errorf("无效的 token")
 	}
-	signature := GenerateSignature(part1+"."+part2, secret)
-	return part1 + "." + part2 + "." + signature, nil
+	return claims.UID, nil
 }
 
-func VerifyJwt(token, secret string) (*JwtHeader, *JwtPayload, error) {
-	parts := strings.Split(token, ".")
-	if len(parts) != 3 {
-		return nil, nil, fmt.Errorf("token格式不正确")
+// GenRefreshToken 生成 32 字节随机 hex 串作为 refresh token
+func GenRefreshToken() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
 	}
-	if !CheckSignature(parts[0], parts[1], parts[2], secret) {
-		return nil, nil, fmt.Errorf("签名不匹配")
-	}
-	var header JwtHeader
-	if err := DecodeAndUnmarshal(parts[0], &header); err != nil {
-		return nil, nil, fmt.Errorf("header解码失败: %v", err)
-	}
-	var payload JwtPayload
-	if err := DecodeAndUnmarshal(parts[1], &payload); err != nil {
-		return nil, nil, fmt.Errorf("payload解码失败: %v", err)
-	}
-	return &header, &payload, nil
+	return hex.EncodeToString(b), nil
 }

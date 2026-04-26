@@ -1,34 +1,27 @@
 import axios from 'axios';
 
-const isDEV = import.meta.env.VITE_APP_ENV === 'development'
+const isDEV = import.meta.env.VITE_APP_ENV === 'development';
 
-// 获取当前环境
 const axiosClient = axios.create({
-  baseURL: isDEV ? 'http://localhost:5678' : "",
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  withCredentials: isDEV  // 允许携带跨域cookies
+  baseURL: isDEV ? 'http://localhost:5678' : '',
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: isDEV,
 });
 
-// 请求拦截器
-axiosClient.interceptors.request.use(
-  config => {
-    const auth_token = sessionStorage.getItem('auth_token');
-
-    config.headers.auth_token = `${ auth_token }`;
-    return config;
-  },
-  error => {
-    return Promise.reject(error);
+axiosClient.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem('auth_token');
+  if (token) {
+    config.headers.auth_token = token;
   }
-);
+  return config;
+});
 
-// 响应拦截器
 axiosClient.interceptors.response.use(
-  response => response,
-  error => {
-    // 处理响应错误
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      sessionStorage.removeItem('auth_token');
+    }
     return Promise.reject(error);
   }
 );

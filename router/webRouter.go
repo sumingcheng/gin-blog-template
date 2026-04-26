@@ -4,9 +4,10 @@ import (
 	"blog/common"
 	"blog/middleware"
 	"embed"
+	"net/http"
+
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func SetNoCacheHeaders(c *gin.Context) {
@@ -20,9 +21,10 @@ func SetWebRouter(
 	buildFS embed.FS,
 	indexPage []byte,
 ) {
-	router.Use(middleware.Cache())
-	router.Use(middleware.CORSMiddleware())
-	router.Use(static.Serve("/", common.EmbedFolder(buildFS, "web/dist")))
+	// Cache 只对静态资源生效，不影响 API
+	staticGroup := router.Group("/", middleware.Cache())
+	staticGroup.Use(static.Serve("/", common.EmbedFolder(buildFS, "web/dist")))
+
 	router.NoRoute(func(c *gin.Context) {
 		SetNoCacheHeaders(c)
 		c.Data(http.StatusOK, "text/html; charset=utf-8", indexPage)

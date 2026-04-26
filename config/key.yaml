@@ -1,1 +1,2 @@
-jwt: 123456  # JWT secret key
+# 生产环境必须替换为强随机密钥（至少32字符），通过环境变量注入
+jwt: please-change-this-secret-key-in-production

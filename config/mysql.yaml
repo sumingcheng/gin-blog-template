@@ -1,5 +1,0 @@
-blog:
-  host: "172.22.220.64"
-  port: 3306
-  user: "root"
-  pass: "admin123456"

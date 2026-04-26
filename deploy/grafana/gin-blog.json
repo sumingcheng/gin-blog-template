@@ -111,7 +111,7 @@
             "uid": "bdswadq0w1beof"
           },
           "editorMode": "code",
-          "expr": "rate(request_timer{service=\"blog\", interface=~\"^/api.*\"}[5m])",
+          "expr": "rate(request_duration_ms_sum{service=\"blog\", interface=~\"^/api.*\"}[5m]) / rate(request_duration_ms_count{service=\"blog\", interface=~\"^/api.*\"}[5m])",
           "instant": false,
           "legendFormat": "{{interface}}",
           "range": true,
@@ -207,7 +207,7 @@
             "uid": "bdswadq0w1beof"
           },
           "editorMode": "code",
-          "expr": "request_timer{service=\"blog\", interface=~\"^/api.*\"}",
+          "expr": "histogram_quantile(0.95, rate(request_duration_ms_bucket{service=\"blog\", interface=~\"^/api.*\"}[5m]))",
           "instant": false,
           "interval": "",
           "legendFormat": "{{interface}}",

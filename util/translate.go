@@ -15,13 +15,14 @@ import (
 
 var trans ut.Translator
 
-func init() {
-	if err := transInit("zh"); err != nil {
-		LogRus.Fatal("Failed to initialize translator:", err)
+// InitTranslator 必须在 InitLog 之后调用
+func InitTranslator(locale string) {
+	if err := initTranslator(locale); err != nil {
+		LogRus.Fatalf("初始化翻译器失败: %v", err)
 	}
 }
 
-func transInit(locale string) error {
+func initTranslator(locale string) error {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		zhT := zh.New()              // Chinese translator
 		enT := en.New()              // English translator
@@ -49,11 +50,10 @@ func transInit(locale string) error {
 
 func TranslateErrors(err error) string {
 	var errs validator.ValidationErrors
-	if errors.As(err, &errs) {
+	if errors.As(err, &errs) && trans != nil {
 		var errMessages []string
 		for _, e := range errs {
-			translatedMsg := e.Translate(trans)
-			errMessages = append(errMessages, translatedMsg)
+			errMessages = append(errMessages, e.Translate(trans))
 		}
 		return strings.Join(errMessages, ", ")
 	}

@@ -4,68 +4,67 @@ import (
 	"blog/util"
 	"context"
 	"fmt"
-	"github.com/redis/go-redis/v9"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	ormlog "gorm.io/gorm/logger"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/redis/go-redis/v9"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	ormlog "gorm.io/gorm/logger"
 )
 
 var (
-	blogMysql     *gorm.DB
-	blogMysqlOnce sync.Once
+	blogDB     *gorm.DB
+	blogDBOnce sync.Once
 
 	blogRedis     *redis.Client
 	blogRedisOnce sync.Once
 )
 
 func GetBlogDBConnection() *gorm.DB {
-	// 并发安全的单例模式
-	blogMysqlOnce.Do(func() {
-		if blogMysql == nil {
-			dbName := "blog"
-			viper := util.CreateConfig("mysql")
-			host := viper.GetString(dbName + ".host")
-			port := viper.GetInt(dbName + ".port")
-			user := viper.GetString(dbName + ".user")
-			pass := viper.GetString(dbName + ".pass")
-			blogMysql = createMysqlDB(dbName, host, user, pass, port)
+	blogDBOnce.Do(func() {
+		if blogDB == nil {
+			cfg := util.CreateConfig("postgres")
+			host := cfg.GetString("host")
+			port := cfg.GetInt("port")
+			user := cfg.GetString("user")
+			pass := cfg.GetString("pass")
+			dbname := cfg.GetString("dbname")
+			blogDB = createPostgresDB(dbname, host, user, pass, port)
 		}
 	})
-	return blogMysql
+	return blogDB
 }
 
-func createMysqlDB(
-	dbname, host, user, pass string,
-	port int,
-) *gorm.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, pass, host, port, dbname)
+func createPostgresDB(dbname, host, user, pass string, port int) *gorm.DB {
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
+		host, port, user, pass, dbname)
 	db, err := gorm.Open(
-		mysql.Open(dsn), &gorm.Config{
+		postgres.Open(dsn), &gorm.Config{
 			Logger: ormlog.New(
 				log.New(os.Stdout, "\r\n", log.LstdFlags),
 				ormlog.Config{
-					SlowThreshold: 100 * time.Millisecond, // 设置 SQL 阈值
-					LogLevel:      ormlog.Info,            // Silent表示不输出日志
-					Colorful:      true,                   // 彩色日志打印
+					SlowThreshold: 100 * time.Millisecond,
+					LogLevel:      ormlog.Warn,
+					Colorful:      true,
 				},
 			),
-			PrepareStmt: true, // 启用PrepareStmt, SQL预编译，提高查询效率
+			PrepareStmt: true,
 		},
 	)
-
 	if err != nil {
-		util.LogRus.Panicf("connect to mysql use dsn %v failed: %v", dsn, err)
+		util.LogRus.Panicf("连接 postgres 失败: %v", err)
 	}
 
-	// 设置数据库连接池参数，提高并发性能
-	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(100) // 设置数据库连接池最大连接数
-	sqlDB.SetMaxIdleConns(20)  // 设置连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超出的连接会被连接池关闭。
-	util.LogRus.Infof("connect to mysql db %v", dbname)
+	sqlDB, err := db.DB()
+	if err != nil {
+		util.LogRus.Panicf("获取底层 sql.DB 失败: %v", err)
+	}
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(20)
+	util.LogRus.Infof("connected to postgres db %s", dbname)
 
 	return db
 }

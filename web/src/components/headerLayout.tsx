@@ -1,12 +1,12 @@
-import React from 'react';
+import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
-import Header from './header'; // 确保导入你的Header组件
+import Header from './header';
 
-const MainLayout: React.FC = () => {
+const MainLayout: FC = () => {
   return (
     <>
-      <Header/>
-      <Outlet/>
+      <Header />
+      <Outlet />
     </>
   );
 };

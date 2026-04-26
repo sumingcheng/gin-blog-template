@@ -1,161 +1,112 @@
 package handler
 
 import (
-	"blog/database"
-	"blog/middleware"
+	"blog/model"
+	"blog/service"
 	"blog/util"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-type BlogListResponse struct {
-	Code  int              `json:"code"`
-	Msg   string           `json:"msg"`
-	Blogs []*database.Blog `json:"blogs"`
+type CreateBlogRequest struct {
+	Title   string `json:"title" binding:"required,min=1"`
+	Article string `json:"article" binding:"required,min=1"`
 }
 
 type UpdateRequest struct {
-	BlogId  int    `form:"bid" binding:"gt=0"`
-	Title   string `form:"title" binding:"required,min=1"`
-	Article string `form:"article" binding:"required,min=1"`
+	BlogId  int    `json:"blogId" binding:"gt=0"`
+	Title   string `json:"title" binding:"required,min=1"`
+	Article string `json:"article" binding:"required,min=1"`
 }
 
 type BlogBelongRequest struct {
-	Bid int `form:"bid" binding:"required"`
+	Bid int `json:"bid" binding:"required"`
 }
 
-type BlogBelongResponse struct {
-	Code   int    `json:"code"`
-	Msg    string `json:"msg"`
-	Belong bool   `json:"belong"`
-}
-
+// BlogList 分页列表（支持 ?page=&size=&uid=&keyword=）
 func BlogList(ctx *gin.Context) {
-	uid, err := strconv.Atoi(ctx.Param("uid"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": 1,
-			"msg":  "无效的用户id",
-		})
+	var page model.PageQuery
+	if err := ctx.ShouldBindQuery(&page); err != nil {
+		model.FailMsg(ctx, model.ErrBadRequest, util.TranslateErrors(err))
 		return
 	}
-
-	blogs := database.GetBlogByUserId(uid)
-	util.LogRus.Debugf("get %d blogs of user %d", len(blogs), uid)
-
-	ctx.JSON(http.StatusOK, BlogListResponse{
-		Code:  0,
-		Msg:   "success",
-		Blogs: blogs,
-	})
+	uid, _ := strconv.Atoi(ctx.Query("uid"))
+	result := service.GetBlogList(page, uid)
+	model.OK(ctx, result)
 }
 
 func BlogDetail(ctx *gin.Context) {
-	blogId := ctx.Param("bid")
-	bid, err := strconv.Atoi(blogId)
+	bid, err := strconv.Atoi(ctx.Param("bid"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": 1,
-			"msg":  "无效的博客id",
-		})
+		model.FailMsg(ctx, model.ErrBadRequest, "无效的博客 ID")
 		return
 	}
-
-	blog := database.GetBlogById(bid)
-	if blog == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"code": 1,
-			"msg":  "博客不存在",
-		})
+	blog, bizErr := service.GetBlogDetail(bid)
+	if bizErr != nil {
+		model.Fail(ctx, bizErr)
 		return
 	}
+	model.OK(ctx, blog)
+}
 
-	util.LogRus.Debug("get blog detail: ", blog.Article)
-	ctx.JSON(http.StatusOK, BlogListResponse{
-		Code:  0,
-		Msg:   "success",
-		Blogs: []*database.Blog{blog},
-	})
+func BlogCreate(ctx *gin.Context) {
+	var req CreateBlogRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		model.FailMsg(ctx, model.ErrBadRequest, util.TranslateErrors(err))
+		return
+	}
+	uid, _ := ctx.Get("uid")
+	blog, bizErr := service.CreateBlog(uid.(int), req.Title, req.Article)
+	if bizErr != nil {
+		model.Fail(ctx, bizErr)
+		return
+	}
+	model.OK(ctx, blog)
 }
 
 func BlogUpdate(ctx *gin.Context) {
-	var request UpdateRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": 1,
-			"msg":  err.Error(),
-		})
-		util.LogRus.Errorf("update blog failed: %s", err)
+	var req UpdateRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		model.FailMsg(ctx, model.ErrBadRequest, util.TranslateErrors(err))
 		return
 	}
-
-	bid := request.BlogId
-	blog := database.GetBlogById(bid)
-	if blog == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": 1,
-			"msg":  "blog id not exists",
-		})
-		util.LogRus.Errorf("blog id %d not exists", bid)
+	loginUid, _ := ctx.Get("uid")
+	bizErr := service.UpdateBlog(loginUid.(int), req.BlogId, req.Title, req.Article)
+	if bizErr != nil {
+		model.Fail(ctx, bizErr)
 		return
 	}
-
-	loginUid, ok := ctx.Value("uid").(int)
-	if !ok || loginUid != blog.UserId {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"code": 1,
-			"msg":  "无权修改",
-		})
-		util.LogRus.Errorf("user %d attempted to modify blog %d without permission", loginUid, bid)
-		return
-	}
-
-	err := database.UpdateBlog(&database.Blog{Id: bid, Title: request.Title, Article: request.Article})
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"code": 1,
-			"msg":  "更新失败",
-		})
-		util.LogRus.Errorf("update blog %d failed: %s", bid, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"code": 0,
-		"msg":  "success",
-	})
+	model.OK(ctx, nil)
 }
 
-// BlogBelong 是否有权修改这篇博客
+func BlogDelete(ctx *gin.Context) {
+	bid, err := strconv.Atoi(ctx.Param("bid"))
+	if err != nil {
+		model.FailMsg(ctx, model.ErrBadRequest, "无效的博客 ID")
+		return
+	}
+	loginUid, _ := ctx.Get("uid")
+	bizErr := service.DeleteBlog(loginUid.(int), bid)
+	if bizErr != nil {
+		model.Fail(ctx, bizErr)
+		return
+	}
+	model.OK(ctx, nil)
+}
+
 func BlogBelong(ctx *gin.Context) {
 	var req BlogBelongRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusOK, BlogBelongResponse{
-			Code:   1,
-			Msg:    err.Error(),
-			Belong: false,
-		})
+		model.FailMsg(ctx, model.ErrBadRequest, util.TranslateErrors(err))
 		return
 	}
-
-	blog := database.GetBlogById(req.Bid)
-	if blog == nil {
-		ctx.JSON(http.StatusOK, BlogBelongResponse{
-			Code:   1,
-			Msg:    "blog id not exists",
-			Belong: false,
-		})
-		return
-	}
-
 	token := ctx.Request.Header.Get("auth_token")
-	loginUid := middleware.GetUidFromJwt(token)
-	belong := loginUid == blog.UserId
-
-	ctx.JSON(http.StatusOK, BlogBelongResponse{
-		Code:   0,
-		Msg:    "success",
-		Belong: belong,
-	})
+	uid := service.GetUidFromToken(token)
+	belong, bizErr := service.CheckBlogBelong(uid, req.Bid)
+	if bizErr != nil {
+		model.Fail(ctx, bizErr)
+		return
+	}
+	model.OK(ctx, gin.H{"belong": belong})
 }

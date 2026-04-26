@@ -1,29 +1,37 @@
-import axiosClient from "../utils/axiosClient.tsx";
+import axiosClient from '../utils/axiosClient';
 
-// 登录
-export const login = async (data: {user: string, pass: string}) => {
-  const res = await axiosClient({
-    url: '/api/login',
-    method: 'post',
-    data
-  })
-  return res.data
+interface ApiResponse<T = any> {
+  code: number;
+  msg: string;
+  data?: T;
+}
+
+export const login = async (data: { user: string; pass: string }): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/login', data);
+  return res.data;
 };
 
-// 获取token
-export const getAuthToken = async () => {
-  const res = await axiosClient({
-    url: '/api/token',
-    method: 'get',
-  })
-  return res.data
+export const register = async (data: { user: string; pass: string }): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/register', data);
+  return res.data;
 };
 
-// 退出登录
-export const logout = async () => {
-  const res = await axiosClient({
-    url: '/api/logout',
-    method: 'get',
-  })
-  return res.data
+export const logout = async (): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/logout');
+  return res.data;
+};
+
+export const getAuthToken = async (): Promise<ApiResponse> => {
+  const res = await axiosClient.get('/api/token');
+  return res.data;
+};
+
+export const getProfile = async (): Promise<ApiResponse> => {
+  const res = await axiosClient.get('/api/user/profile');
+  return res.data;
+};
+
+export const changePassword = async (data: { oldPass: string; newPass: string }): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/user/password', data);
+  return res.data;
 };

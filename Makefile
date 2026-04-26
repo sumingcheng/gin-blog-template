@@ -7,7 +7,7 @@ build:
 	@docker build --build-arg NPM_REGISTRY=https://registry.npmmirror.com/ --no-cache -t $(IMAGE_NAME) .
 
 run:
-	@docker run -d --name $(CONTAINER_NAME) -p $(EXTERNAL_PORT):$(INTERNAL_PORT) $(IMAGE_NAME) -v /home/logs:/logs
+	@docker run -d --name $(CONTAINER_NAME) -p $(EXTERNAL_PORT):$(INTERNAL_PORT) -v /home/logs:/logs $(IMAGE_NAME)
 
 stop:
 	@docker stop $(CONTAINER_NAME)

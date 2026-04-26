@@ -1,12 +1,12 @@
 package util
 
 import (
-	"errors"
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"runtime"
+
+	"github.com/spf13/viper"
 )
 
 func getProjectRootPath() string {
@@ -28,10 +28,7 @@ func CreateConfig(file string) *viper.Viper {
 	config.SetConfigType("yaml")
 
 	if err := config.ReadInConfig(); err != nil {
-		var configFileNotFoundError viper.ConfigFileNotFoundError
-		if errors.As(err, &configFileNotFoundError) {
-			panic(fmt.Errorf("找不到配置文件：%s", filepath.Join(getProjectRootPath(), file+".yaml")))
-		}
+		panic(fmt.Errorf("读取配置文件 %s.yaml 失败: %w", file, err))
 	}
 	return config
 }

@@ -1,13 +1,16 @@
 package util
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func Md5(text string) string {
-	hash := md5.New()
-	hash.Write([]byte(text))
-	hashBytes := hash.Sum(nil)
-	return hex.EncodeToString(hashBytes)
+// HashPassword bcrypt 哈希，cost=10
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+// CheckPassword 比对明文与 bcrypt 哈希
+func CheckPassword(password, hash string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }

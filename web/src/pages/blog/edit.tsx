@@ -1,59 +1,127 @@
-import { FC, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Box, Button, FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
-import { getBlogDetail, updateBlog } from "../../api/blog.ts";
-import useCustomToast from "../../hooks/useCustomToast.tsx";
+import { FC, useEffect, useState } from 'react';
+import { Box, Flex, Text } from '@chakra-ui/react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getBlogDetail, updateBlog } from '../../api/blog';
+import useCustomToast from '../../hooks/useCustomToast';
 
-const EditBlogPost: FC = () => {
+const EditBlogPage: FC = () => {
+  const { bid } = useParams<{ bid: string }>();
+  const [title, setTitle] = useState('');
+  const [article, setArticle] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const { showSuccessToast, showWarningToast } = useCustomToast();
-  const [title, setTitle] = useState("");
-  const [article, setArticle] = useState("");
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const id = searchParams.get("id") || "";
-
-  const fetchBlogPost = async () => {
-    try {
-      const res = await getBlogDetail(id);
-      setTitle(res.blogs[0].title);
-      setArticle(res.blogs[0].article);
-    } catch (error) {
-      console.error('无法获取博客详细信息:', error);
-      showWarningToast('无法获取博客详细信息');
-    }
-  };
 
   useEffect(() => {
-    fetchBlogPost();
-  }, [id]);
+    if (!bid) { return; }
+    setFetching(true);
+    getBlogDetail(Number(bid)).then((res) => {
+      if (res.code === 0 && res.data) {
+        setTitle(res.data.title);
+        setArticle(res.data.article);
+      }
+    }).finally(() => setFetching(false));
+  }, [bid]);
 
   const handleSubmit = async () => {
+    if (!title.trim() || !article.trim()) {
+      showWarningToast('标题和内容不能为空');
+      return;
+    }
+    setLoading(true);
     try {
-      await updateBlog({ blogId: Number(id), title, article });
-      showSuccessToast('博客更新成功')
-      navigate(`/blog`);
-    } catch (error) {
-      console.error('Failed to update blog:', error);
-      showWarningToast('Failed to update blog.')
+      const res = await updateBlog({ blogId: Number(bid), title, article });
+      if (res.code === 0) {
+        showSuccessToast('已保存');
+        navigate('/');
+      } else {
+        showWarningToast(res.msg);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (fetching) {
+    return (
+      <Box maxW="680px" mx="auto" px={5} pt="80px" opacity={0.3}>
+        <Box h="28px" w="50%" bg="#eee" borderRadius="3px" mb="32px" />
+        <Box h="14px" w="100%" bg="#eee" borderRadius="3px" mb={3} />
+        <Box h="14px" w="80%" bg="#eee" borderRadius="3px" />
+      </Box>
+    );
+  }
+
   return (
-    <Box p={ 10 }>
-      <FormControl>
-        <FormLabel fontWeight="bold">博客标题</FormLabel>
-        <Input placeholder={ "请输入标题" } value={ title } onChange={ (e) => setTitle(e.target.value) }/>
-      </FormControl>
-      <FormControl mt={ 4 }>
-        <FormLabel fontWeight="bold">博客文章</FormLabel>
-        <Textarea placeholder={ "请输入内容" } value={ article } onChange={ (e) => setArticle(e.target.value) }/>
-      </FormControl>
-      <Button mt={ 4 } colorScheme="blue" onClick={ handleSubmit }>
-        保存
-      </Button>
+    <Box maxW="680px" mx="auto" px={5} pt="80px" pb="120px">
+      <Flex justify="space-between" align="center" mb="48px">
+        <Text
+          fontSize="13px"
+          color="#999"
+          cursor="pointer"
+          _hover={{ color: '#111' }}
+          onClick={() => navigate(-1)}
+        >
+          ← 返回
+        </Text>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          style={{
+            height: '32px',
+            padding: '0 20px',
+            background: '#111',
+            color: '#fff',
+            fontSize: '13px',
+            fontWeight: 500,
+            border: 'none',
+            borderRadius: '6px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.6 : 1,
+          }}
+        >
+          {loading ? '保存中...' : '保存'}
+        </button>
+      </Flex>
+
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="标题"
+        style={{
+          width: '100%',
+          fontSize: '28px',
+          fontWeight: 600,
+          border: 'none',
+          outline: 'none',
+          letterSpacing: '-0.3px',
+          color: '#111',
+          marginBottom: '32px',
+        }}
+      />
+
+      <textarea
+        value={article}
+        onChange={(e) => setArticle(e.target.value)}
+        placeholder="文章内容"
+        style={{
+          width: '100%',
+          minHeight: '400px',
+          fontSize: '16px',
+          lineHeight: '2',
+          border: 'none',
+          outline: 'none',
+          resize: 'none',
+          color: '#333',
+        }}
+      />
+
+      <Text fontSize="12px" color="#ccc" textAlign="right" mt={4}>
+        {article.length} 字
+      </Text>
     </Box>
   );
 };
 
-export default EditBlogPost;
+export default EditBlogPage;

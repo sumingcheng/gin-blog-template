@@ -1,39 +1,42 @@
-import axiosClient from "../utils/axiosClient.tsx";
+import axiosClient from '../utils/axiosClient';
 
-// 获取博客是属于哪个用户
-export const getBelong = async (data: {bid: number}) => {
-  const res = await axiosClient({
-    url: `/api/blog/belong`,
-    method: 'POST',
-    data
-  })
-  return res.data
+interface ApiResponse<T = any> {
+  code: number;
+  msg: string;
+  data?: T;
+}
+
+export const getBlogList = async (params: {
+  page?: number;
+  size?: number;
+  uid?: number;
+  keyword?: string;
+}): Promise<ApiResponse> => {
+  const res = await axiosClient.get('/api/blog/list', { params });
+  return res.data;
 };
 
-// 获取博客列表
-export const getBlogList = async (uid: number) => {
-  const res = await axiosClient({
-    url: `/api/blog/list/${ uid }`,
-    method: 'get',
-  })
-  return res.data
+export const getBlogDetail = async (bid: number): Promise<ApiResponse> => {
+  const res = await axiosClient.get(`/api/blog/${bid}`);
+  return res.data;
 };
 
-// 获取博客详情
-export const getBlogDetail = async (bid: string) => {
-  const res = await axiosClient({
-    url: `/api/blog/${ bid }`,
-    method: 'get',
-  })
-  return res.data
+export const createBlog = async (data: { title: string; article: string }): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/blog/create', data);
+  return res.data;
 };
 
-// 更新博客
-export const updateBlog = async (data: {blogId: number, title: string, article: string}) => {
-  const res = await axiosClient({
-    url: `/api/blog/update`,
-    method: 'post',
-    data,
-  })
-  return res.data
+export const updateBlog = async (data: { blogId: number; title: string; article: string }): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/blog/update', data);
+  return res.data;
+};
+
+export const deleteBlog = async (bid: number): Promise<ApiResponse> => {
+  const res = await axiosClient.delete(`/api/blog/${bid}`);
+  return res.data;
+};
+
+export const getBelong = async (data: { bid: number }): Promise<ApiResponse> => {
+  const res = await axiosClient.post('/api/blog/belong', data);
+  return res.data;
 };

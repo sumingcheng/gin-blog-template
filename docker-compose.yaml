@@ -7,27 +7,25 @@ services:
     volumes:
       - gin_blog_logs:/logs
     depends_on:
-      - mysql
+      - postgres
       - redis
     networks:
       - gin-blog
 
-  mysql:
-    image: mysql:8.0.36
-    container_name: mysql_server
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres_server
     environment:
-      MYSQL_ROOT_PASSWORD: admin123456
-      MYSQL_DATABASE: blog
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin123456
+      POSTGRES_DB: blog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123456
     ports:
-      - "3306:3306"
-    command: --default-authentication-plugin=mysql_native_password
+      - "5432:5432"
     volumes:
-      - mysql:/var/lib/mysql
+      - postgres:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init_script.sql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -89,7 +87,7 @@ services:
       - prometheus
 
 volumes:
-  mysql:
+  postgres:
   redis:
   gin_blog_logs:
   prometheus_data:
